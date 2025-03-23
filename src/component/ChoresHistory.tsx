@@ -37,25 +37,24 @@ const ChoresHistory = ({kidId, setTotalPoint, nowYear, nowMonth}:ChoresHistoryPr
             .order("id", {ascending: true})
     );
 
-    const [checked, setChecked] = useState([0]);
-    
     useEffect(() => {
         if(chores_history === undefined) return;
         const result = chores_history?.reduce((a, b) => a + b.chores_type.point, 0);
         setTotalPoint(result);
     })
 
+    const [checked, setChecked] = useState([0]);
     const handleToggle = (value: number) => () => {
-      const currentIndex = checked.indexOf(value);
-      const newChecked = [...checked];
+        const currentIndex = checked.indexOf(value);
+        const newChecked = [...checked];
   
-      if (currentIndex === -1) {
-        newChecked.push(value);
-      } else {
-        newChecked.splice(currentIndex, 1);
-      }
+        if (currentIndex === -1) {
+            newChecked.push(value);
+        } else {
+            newChecked.splice(currentIndex, 1);
+        }
   
-      setChecked(newChecked);
+        setChecked(newChecked);
     };
 
     return (
@@ -63,7 +62,7 @@ const ChoresHistory = ({kidId, setTotalPoint, nowYear, nowMonth}:ChoresHistoryPr
             <Typography variant='h6'>{nowMonth}月のお手伝い履歴（{chores_history?.length}回）</Typography>
             <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
                 {
-                chores_history?.map((history, i=1) => {
+                chores_history?.map((history) => {
                     const labelId = `checkbox-list-label-${history.id}`;
 
                     return (

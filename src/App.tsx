@@ -46,17 +46,26 @@ const App = () => {
     const nowYear = nowDate.getFullYear();
     const nowMonth = nowDate.getMonth() + 1;
 
-    console.log(nowYear, nowMonth)
+    // console.log(nowYear, nowMonth)
 
     /**
      * お手伝い履歴を追加
      * @param choresId お手伝いID
      */
-    const setAddChoresHistory = async (choresId: number) => {
+    const setAddChoresHistory = (choresId: Number[], resetChecked: () => void) => async() => {
         const date = new Date().toLocaleDateString("ja-JP", {year: "numeric",month: "2-digit",day: "2-digit"}).replace(/\//g, '-');
+        const insertData = choresId.map((id) => {
+            return { kid_id: selectedKidId, point_type_id: id, created_at: date}
+        })
+        
         const { error } = await supabase
             .from('chores_history')
-            .insert({ kid_id: selectedKidId, point_type_id: choresId, created_at: date});
+            .insert(insertData);
+        if(error) {
+            console.error(error);
+        }else{
+            resetChecked();
+        }
     }
 
     return (
