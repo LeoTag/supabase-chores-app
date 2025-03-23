@@ -1,51 +1,58 @@
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
-import { createClient } from "@supabase/supabase-js";
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardActionArea from '@mui/material/CardActionArea'
 import { Button, Drawer, Typography } from '@mui/material'
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useState } from 'react'
+import { supabase } from '../config/supabase';
 
-const supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_ANON_KEY
-)
-
- export type ChoresSheetProps = {
-    id: number,
-    title: string,
-    point: number,
-    description: string
+const buttonStyle = {
+    position: 'fixed',
+    bottom: '10%',
+    right: '0px',
+    zIndex: 1000,
+    writingMode: 'vertical-rl',
+    textOrientation: 'upright',
+    padding: '10px 12px',
+    minWidth: '36px',
 }
 
-const ChoresSheetDrawer = () => {
+export type ChoresSheetDrawerProps = {
+    setAddChoresHistory: (choresId: number) => void;
+    selectedKidName: string;
+}
 
+const ChoresSheetDrawer = ({setAddChoresHistory, selectedKidName}: ChoresSheetDrawerProps) => {
     const { data: chores_type } = useQuery(
         supabase
             .from("chores_type")
             .select("*")
+            .order("point", {ascending: false})
             .order("id")
     );
 
     const [open, setOpen] = useState(false);
-
     const toggleDrawer = (newOpen: boolean) => () => {
       setOpen(newOpen);
     };
 
     return (
         <Box padding={2}>
-            <Button onClick={toggleDrawer(true)}>お手伝い表を開く</Button>
+            <Button onClick={toggleDrawer(true)} variant='contained' sx={buttonStyle} 
+                endIcon={<AddCircleIcon sx={{marginTop: "4px", marginLeft: "-9px"}} />}
+            >
+                お手伝いを管理
+            </Button>
             <Drawer open={open} onClose={toggleDrawer(false)} anchor="right">
                 <Box padding={2}>
-                    <Typography variant='h6' marginBottom={1}>お手伝い表</Typography>
+                    <Typography variant='body1' marginBottom={1}>{selectedKidName}にお手伝いポイントを付与</Typography>
                     {
                         chores_type?.map(chores => 
                             <Card className="p-chores__card" key={chores.id}>
-                                <CardActionArea>
-                                    {/* onClick={() => setSelectedCard(chores)} */}
+                                <CardActionArea onClick={() => setAddChoresHistory(chores.id)}>
                                     <CardContent sx={{padding: 1.5}}>
                                         <Stack direction="row" spacing={2} sx={{justifyContent: "space-between"}}>
                                             <h4 className="p-chores__card__title">{chores.title}</h4>

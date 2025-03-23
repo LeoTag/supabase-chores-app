@@ -1,28 +1,24 @@
 import Box from '@mui/material/Box';
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
-import { createClient } from "@supabase/supabase-js";
 import { Checkbox, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { supabase } from '../config/supabase';
 
-const supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_ANON_KEY
-)
-
-export type ChoresSheetProps = {
-    id: number,
-    title: string,
-    point: number,
-    description: string
-}
 
 type ChoresHistoryProps = {
     kidId: number;
+    setTotalPoint: (point: number) => void;
     nowYear: number;
     nowMonth: number;
 }
 
-const ChoresHistory = ({kidId, nowYear, nowMonth}:ChoresHistoryProps) => {
+/**
+ * お手伝い履歴を取得
+ * @param kidId 子供のID
+ * @param nowYear 履歴を取得する年
+ * @param nowMonth 履歴を取得する月
+ */
+const ChoresHistory = ({kidId, setTotalPoint, nowYear, nowMonth}:ChoresHistoryProps) => {
     const nowMonthDigits = ("0"+nowMonth).slice(-2);
     const nextMonthDigits = ("0"+(nowMonth+1)).slice(-2);
 
@@ -34,13 +30,20 @@ const ChoresHistory = ({kidId, nowYear, nowMonth}:ChoresHistoryProps) => {
                 kids(name),
                 chores_type(title, point)
             `)
-            .eq('kids_id', kidId)
+            .eq('kid_id', kidId)
             .filter('created_at', 'gte', `${nowYear}-${nowMonthDigits}-01`)
             .filter('created_at', 'lt', `${nowYear}-${nextMonthDigits}-01`)
-            .order("id")
+            .order("created_at", {ascending: false})
+            .order("id", {ascending: true})
     );
 
     const [checked, setChecked] = useState([0]);
+    
+    useEffect(() => {
+        if(chores_history === undefined) return;
+        const result = chores_history?.reduce((a, b) => a + b.chores_type.point, 0);
+        setTotalPoint(result);
+    })
 
     const handleToggle = (value: number) => () => {
       const currentIndex = checked.indexOf(value);
@@ -57,24 +60,29 @@ const ChoresHistory = ({kidId, nowYear, nowMonth}:ChoresHistoryProps) => {
 
     return (
         <Box>
-            <h3>{nowMonth}月のお手伝い履歴</h3>
-            <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+            <Typography variant='h6'>{nowMonth}月のお手伝い履歴（{chores_history?.length}回）</Typography>
+            <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
                 {
-                chores_history?.map((history) => {
+                chores_history?.map((history, i=1) => {
                     const labelId = `checkbox-list-label-${history.id}`;
 
                     return (
-                    <ListItem key={history.id} disablePadding>
+                    <ListItem key={history.id} disablePadding
+                        secondaryAction={
+                            <Typography variant="body2" color="text.secondary">
+                                {history.created_at}
+                            </Typography>
+                        }
+                    >
                         <ListItemButton role={undefined} onClick={handleToggle(history.id)} dense>
-                    
-                        <Checkbox
-                            edge="start"
-                            checked={checked.includes(history.id)}
-                            tabIndex={-1}
-                            disableRipple
-                        />
-                        
-                        <ListItemText id={labelId} primary={history.chores_type.title} />
+                            <Checkbox
+                                edge="start"
+                                checked={checked.includes(history.id)}
+                                tabIndex={-1}
+                                disableRipple
+                                sx={{ padding: 0, paddingRight: 1 }}
+                            />
+                            <ListItemText id={labelId} primary={history.chores_type.title} />
                         </ListItemButton>
                     </ListItem>
                     );

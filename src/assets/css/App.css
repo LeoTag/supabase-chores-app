@@ -4,6 +4,10 @@
     }
 }
 
+.p-chores-sheet__toggle-btn{
+    background: #000;
+}
+
 .p-chores__card{
     border-left: 4px solid #1976d2;
 
@@ -31,4 +35,9 @@
         color: #999;
         font-size: 12px;
     }
+}
+
+
+.MuiListItemText-root{
+    margin: 0 !important;
 }
