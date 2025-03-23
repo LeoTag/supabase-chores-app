@@ -1,21 +1,32 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
+import { useEffect, useState } from 'react'
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
 import Stack from '@mui/material/Stack';
 import TabPanel from '@mui/lab/TabPanel';
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
-import { AppBar, List, ListItem, ListItemButton, ListItemText, Tabs, Typography } from '@mui/material'
+import { AppBar, createMuiTheme, List, ListItem, ListItemText, Tabs, ThemeProvider, Typography } from '@mui/material'
 import ChoresSheetDrawer from './component/ChoresSheet';
 import ChoresHistory from './component/ChoresHistory'
 import { supabase } from './config/supabase';
 
- export type KidProps = {
+const theme = createMuiTheme({
+    typography: {
+      fontFamily: [
+        "Noto Sans JP",
+        'Nunito',
+        'Roboto',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif'
+      ].join(','),
+    }
+  })
+  
+export type KidProps = {
     name: string,
-    grade_id: number | null,
+    grade_id?: number | null,
     thumbnail: String | null,
-    school_grade: {
+    school_grade?: {
         grade: string,
         point: number
     }
@@ -32,10 +43,9 @@ const App = () => {
             .order("id"),
     );
 
-    const [selectedKidId, setSelectedKidId] = React.useState(1);
-    const [selectedKidName, setSelectedKidName] = React.useState("");
-    const [totalPoint, setTotalPoint] = React.useState(0);
-    const [value, setValue] = React.useState(1);
+    const [selectedKid, setSelectedKid] = useState({} as KidProps);
+    const [totalPoint, setTotalPoint] = useState(0);
+    const [value, setValue] = useState(1);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -48,6 +58,11 @@ const App = () => {
 
     // console.log(nowYear, nowMonth)
 
+    useEffect(() => {
+        if(!kids && selectedKid) return;
+        setSelectedKid(kids[0])
+    }, [kids])
+
     /**
      * お手伝い履歴を追加
      * @param choresId お手伝いID
@@ -55,7 +70,7 @@ const App = () => {
     const setAddChoresHistory = (choresId: Number[], resetChecked: () => void) => async() => {
         const date = new Date().toLocaleDateString("ja-JP", {year: "numeric",month: "2-digit",day: "2-digit"}).replace(/\//g, '-');
         const insertData = choresId.map((id) => {
-            return { kid_id: selectedKidId, point_type_id: id, created_at: date}
+            return { kid_id: selectedKid.id, point_type_id: id, created_at: date}
         })
         
         const { error } = await supabase
@@ -69,7 +84,7 @@ const App = () => {
     }
 
     return (
-        <Box>
+        <ThemeProvider theme={theme}>
             <TabContext value={value}>
                 <AppBar position="sticky">
                     <Tabs
@@ -81,9 +96,8 @@ const App = () => {
                     >
                         {
                             kids?.map((kid) => (
-                                <Tab label={kid.name} value={kid.id} key={kid.id} className="l-header__tablist__item" onClick={()=>{
-                                    setSelectedKidId(kid.id)
-                                    setSelectedKidName(kid.name)
+                                <Tab label={kid.name} value={kid.id} key={kid.id} onClick={()=>{
+                                    setSelectedKid(kid)
                                 }} />
                             ))
                         }
@@ -114,8 +128,8 @@ const App = () => {
                     ))
                 }
             </TabContext>
-            <ChoresSheetDrawer setAddChoresHistory={setAddChoresHistory} selectedKidName={selectedKidName} />
-        </Box>
+            <ChoresSheetDrawer setAddChoresHistory={setAddChoresHistory} selectedKid={selectedKid} />
+        </ThemeProvider>
     )
 }
 

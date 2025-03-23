@@ -9,6 +9,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useState } from 'react'
 import { supabase } from '../config/supabase';
+import { KidProps } from '../App'
 
 const buttonStyle = {
     position: 'fixed',
@@ -23,10 +24,10 @@ const buttonStyle = {
 
 export type ChoresSheetDrawerProps = {
     setAddChoresHistory: (choresId: Number[], resetChecked: () => void) => () => void;
-    selectedKidName: string;
+    selectedKid: KidProps;
 }
 
-const ChoresSheetDrawer = ({setAddChoresHistory, selectedKidName}: ChoresSheetDrawerProps) => {
+const ChoresSheetDrawer = ({setAddChoresHistory, selectedKid}: ChoresSheetDrawerProps) => {
     const { data: chores_type } = useQuery(
         supabase
             .from("chores_type")
@@ -55,21 +56,24 @@ const ChoresSheetDrawer = ({setAddChoresHistory, selectedKidName}: ChoresSheetDr
 
     const resetChecked = () => {
         setChecked([]);
+        console.log("snackbarを出したい");
+        console.log("historyをfetchする");
     }
 
     return (
         <Box padding={2}>
             <Button onClick={toggleDrawer(true)} variant='contained' sx={buttonStyle} 
-                endIcon={<AddCircleIcon sx={{marginTop: "4px", marginLeft: "-9px"}} />}
+                startIcon={<AddCircleIcon sx={{marginBottom: "6px", marginRight: 0, marginLeft: "7px"}} />}
             >
-                お手伝いを管理
+                お手伝いポイントを管理
             </Button>
 
             <Drawer open={drawerOpen} onClose={toggleDrawer(false)} anchor="right">
                 <Box padding={2} sx={{textAlign: 'center'}}>
+                    <img src={`assets/images/${selectedKid.thumbnail}`} width={80} alt="" style={{display: 'inline-block'}} />
                     <Typography variant='h6' marginBottom={1} color='primary'>
-                        {selectedKidName}
-                        <Typography variant='body2' color='textPrimary' sx={{display: 'inline-block'}}>にお手伝いポイントを付与</Typography>
+                        {selectedKid.name}
+                        <Typography variant='body2' color='textPrimary' sx={{display: 'inline-block'}}>へのお手伝いポイント</Typography>
                     </Typography>
                     {
                         chores_type?.map(chores => 
@@ -79,9 +83,9 @@ const ChoresSheetDrawer = ({setAddChoresHistory, selectedKidName}: ChoresSheetDr
                                         <Checkbox
                                             checked={checked.includes(chores.id)}
                                             disableRipple
-                                            sx={{ padding: 1, paddingRight: 0 }}
+                                            sx={{ padding: 1, paddingRight: 0}}
                                         />
-                                        <CardContent sx={{padding: "8px !important" as "8px"}}>
+                                        <CardContent sx={{padding: "8px !important" as "8px", width: "100%", justifyContent: "space-between"}}>
                                             <Stack direction="row" spacing={2} sx={{justifyContent: "space-between"}}>
                                                 <h4 className="p-chores__card__title">{chores.title}</h4>
                                                 <h4 className="p-chores__card__point"><strong>{chores.point}</strong>ポイント</h4>
@@ -93,16 +97,16 @@ const ChoresSheetDrawer = ({setAddChoresHistory, selectedKidName}: ChoresSheetDr
                             </Card>
                         )
                     }
-                    <Button onClick={setAddChoresHistory(checked, resetChecked)} variant='contained'>
-                        選択した項目でポイント付与
+                    <Button onClick={setAddChoresHistory(checked, resetChecked)} variant='contained'
+                        disabled={!checked.length}
+                    >
+                        お手伝いポイントを付与
                     </Button>
                 </Box>
-                <hr />
-                <Box padding={2} sx={{textAlign: 'center'}}>
-                    <Button onClick={toggleDrawer(false)} variant='contained'
-                        endIcon={<SettingsIcon />}
-                    >
-                        お手伝い項目を設定
+                <Box padding={2} sx={{textAlign: 'center'}} position={'absolute'} bottom={16} width={'100%'}>
+                    <hr style={{marginBottom: "16px"}} />
+                    <Button variant='contained' endIcon={<SettingsIcon />}>
+                        お手伝い項目を管理（未）
                     </Button>
                 </Box>
             </Drawer>
