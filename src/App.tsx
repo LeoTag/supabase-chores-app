@@ -72,8 +72,8 @@ const App = () => {
                                     <Typography variant="body2">{kid.school_grade.grade}</Typography>
 
                                     <ul>
-                                        <li>お小遣い：{kid.school_grade.point.toLocaleString()}円</li>
-                                        <li>お手伝いP</li>
+                                        <li>基本のお小遣い：{kid.school_grade.point.toLocaleString()}円</li>
+                                        <li>お手伝いポイント：</li>
                                     </ul>
                                 </div>
                             </Stack>
