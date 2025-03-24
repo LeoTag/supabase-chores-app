@@ -1,15 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import Stack from '@mui/material/Stack';
 import TabPanel from '@mui/lab/TabPanel';
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
-import { AppBar, createMuiTheme, List, ListItem, ListItemText, Tabs, ThemeProvider, Typography } from '@mui/material'
+import { mutate } from "swr";
+import { AppBar, createTheme, List, ListItem, ListItemText, Tabs, ThemeProvider, Typography } from '@mui/material'
 import ChoresSheetDrawer from './component/ChoresSheet';
 import ChoresHistory from './component/ChoresHistory'
 import { supabase } from './config/supabase';
+import fetchChoresHistory from './api/fetchChoresHistory'
+import fetchKids from './api/fetchKids'
 
-const theme = createMuiTheme({
+const theme = createTheme({
     typography: {
       fontFamily: [
         "Noto Sans JP",
@@ -20,75 +23,63 @@ const theme = createMuiTheme({
         'sans-serif'
       ].join(','),
     }
-  })
+})
   
 export type KidProps = {
+    id: number,
     name: string,
-    grade_id?: number | null,
     thumbnail: String | null,
-    school_grade?: {
+    school_grade: {
         grade: string,
         point: number
     }
 }
 
 const App = () => {
-    const { data: kids } = useQuery(
-        supabase
-            .from("kids")
-            .select(`
-                id, name, thumbnail, 
-                school_grade(grade, point)
-            `)
-            .order("id"),
-    );
-
+    const { data: kids } = useQuery(fetchKids(), { revalidateOnFocus: false, revalidateOnReconnect: false,});
     const [selectedKid, setSelectedKid] = useState({} as KidProps);
     const [totalPoint, setTotalPoint] = useState(0);
-    const [value, setValue] = useState(1);
+    const [tabValue, setTabValue] = useState(1);
 
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-        setValue(newValue);
+    const handleChange = (_e: React.SyntheticEvent, newValue: number) => {
+        setTabValue(newValue);
     }
 
-    // 当月の取得
-    const nowDate = new Date();
-    const nowYear = nowDate.getFullYear();
-    const nowMonth = nowDate.getMonth() + 1;
-
-    // console.log(nowYear, nowMonth)
-
-    useEffect(() => {
-        if(!kids && selectedKid) return;
-        setSelectedKid(kids[0])
-    }, [kids])
+    const { data: chores_history, count } = useQuery(
+        fetchChoresHistory(selectedKid.id),
+        { revalidateOnFocus: true, revalidateOnReconnect: true,}
+    );
 
     /**
      * お手伝い履歴を追加
      * @param choresId お手伝いID
+     * @param resetChecked チェックボックスをリセットする関数
+     * @returns
      */
-    const setAddChoresHistory = (choresId: Number[], resetChecked: () => void) => async() => {
-        const date = new Date().toLocaleDateString("ja-JP", {year: "numeric",month: "2-digit",day: "2-digit"}).replace(/\//g, '-');
-        const insertData = choresId.map((id) => {
-            return { kid_id: selectedKid.id, point_type_id: id, created_at: date}
-        })
-        
-        const { error } = await supabase
-            .from('chores_history')
-            .insert(insertData);
-        if(error) {
+    const setAddChoresHistory = (choresId: number[], resetChecked: () => void) => async () => {
+        const date = new Date().toLocaleDateString("ja-JP", {year: "numeric", month: "2-digit", day: "2-digit"}).replace(/\//g, '-');
+        const insertData = choresId.map((id) => ({
+            kid_id: selectedKid.id,
+            point_type_id: id,
+            created_at: date
+        }));
+    
+        const { error } = await supabase.from('chores_history').insert(insertData);
+    
+        if (error) {
             console.error(error);
-        }else{
+        } else {
             resetChecked();
+            mutate(() => fetchChoresHistory(selectedKid.id), true);
         }
-    }
+    };
 
     return (
         <ThemeProvider theme={theme}>
-            <TabContext value={value}>
+            <TabContext value={tabValue}>
                 <AppBar position="sticky">
                     <Tabs
-                        value={value}
+                        value={tabValue}
                         onChange={handleChange}
                         indicatorColor="secondary"
                         textColor="inherit"
@@ -117,13 +108,15 @@ const App = () => {
                                             <ListItemText primary={`基本のお小遣い：${kid.school_grade.point.toLocaleString()}円`}/>
                                         </ListItem>
                                         <ListItem disablePadding>
-                                            <ListItemText primary={`お手伝いポイント：${totalPoint.toLocaleString()}円`}/>
+                                            <ListItemText primary={`お手伝いポイント：${totalPoint.toLocaleString()}`}/>
                                         </ListItem>
                                     </List>
                                 </Stack>
                             </Stack>
                             
-                            <ChoresHistory kidId={kid.id} setTotalPoint={setTotalPoint} nowYear={nowYear} nowMonth={nowMonth} />
+                            {
+                                chores_history && <ChoresHistory setTotalPoint={setTotalPoint} chores_history={chores_history} count={count} />
+                            }
                         </TabPanel>
                     ))
                 }

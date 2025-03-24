@@ -38,20 +38,20 @@ export type Database = {
         Row: {
           created_at: string
           id: number
-          kid_id: number | null
-          point_type_id: number | null
+          kid_id: number
+          point_type_id: number
         }
         Insert: {
           created_at: string
           id?: number
-          kid_id?: number | null
-          point_type_id?: number | null
+          kid_id: number
+          point_type_id: number
         }
         Update: {
           created_at?: string
           id?: number
-          kid_id?: number | null
-          point_type_id?: number | null
+          kid_id?: number
+          point_type_id?: number
         }
         Relationships: [
           {
@@ -74,38 +74,38 @@ export type Database = {
         Row: {
           description: string | null
           id: number
-          point: number | null
+          point: number
           title: string
         }
         Insert: {
           description?: string | null
           id?: number
-          point?: number | null
+          point: number
           title: string
         }
         Update: {
           description?: string | null
           id?: number
-          point?: number | null
+          point?: number
           title?: string
         }
         Relationships: []
       }
       kids: {
         Row: {
-          grade_id: number | null
+          grade_id: number
           id: number
           name: string
           thumbnail: string | null
         }
         Insert: {
-          grade_id?: number | null
+          grade_id: number
           id?: number
           name: string
           thumbnail?: string | null
         }
         Update: {
-          grade_id?: number | null
+          grade_id?: number
           id?: number
           name?: string
           thumbnail?: string | null
@@ -124,17 +124,17 @@ export type Database = {
         Row: {
           grade: string
           id: number
-          point: number | null
+          point: number
         }
         Insert: {
           grade: string
           id?: number
-          point?: number | null
+          point: number
         }
         Update: {
           grade?: string
           id?: number
-          point?: number | null
+          point?: number
         }
         Relationships: []
       }

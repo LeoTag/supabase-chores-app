@@ -1,42 +1,28 @@
 import Box from '@mui/material/Box';
-import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 import { Checkbox, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { supabase } from '../config/supabase';
-
 
 type ChoresHistoryProps = {
-    kidId: number;
     setTotalPoint: (point: number) => void;
-    nowYear: number;
-    nowMonth: number;
+    chores_history: {
+        id: number;
+        chores_type: {
+            title: string;
+            point: number;
+        };
+        created_at: string;
+    }[] | undefined;
+    count: number | null;
 }
 
 /**
  * お手伝い履歴を取得
- * @param kidId 子供のID
- * @param nowYear 履歴を取得する年
- * @param nowMonth 履歴を取得する月
+ * @param setTotalPoint お手伝いの合計ポイント
+ * @param chores_history お手伝い履歴
+ * @param count お手伝い履歴の件数
+ * @returns
  */
-const ChoresHistory = ({kidId, setTotalPoint, nowYear, nowMonth}:ChoresHistoryProps) => {
-    const nowMonthDigits = ("0"+nowMonth).slice(-2);
-    const nextMonthDigits = ("0"+(nowMonth+1)).slice(-2);
-
-    const { data: chores_history } = useQuery(
-        supabase
-            .from("chores_history")
-            .select(`
-                *,
-                kids(name),
-                chores_type(title, point)
-            `)
-            .eq('kid_id', kidId)
-            .filter('created_at', 'gte', `${nowYear}-${nowMonthDigits}-01`)
-            .filter('created_at', 'lt', `${nowYear}-${nextMonthDigits}-01`)
-            .order("created_at", {ascending: false})
-            .order("id", {ascending: true})
-    );
-
+const ChoresHistory = ({setTotalPoint, chores_history, count}:ChoresHistoryProps) => {
     useEffect(() => {
         if(chores_history === undefined) return;
         const result = chores_history?.reduce((a, b) => a + b.chores_type.point, 0);
@@ -57,9 +43,11 @@ const ChoresHistory = ({kidId, setTotalPoint, nowYear, nowMonth}:ChoresHistoryPr
         setChecked(newChecked);
     };
 
+    const nowMonth = new Date().getMonth() + 1;
+
     return (
         <Box>
-            <Typography variant='h6'>{nowMonth}月のお手伝い履歴（{chores_history?.length}回）</Typography>
+            <Typography variant='h6'>{nowMonth}月のお手伝い履歴（{count}回）</Typography>
             <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
                 {
                 chores_history?.map((history) => {

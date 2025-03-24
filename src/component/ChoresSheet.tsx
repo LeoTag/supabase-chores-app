@@ -8,8 +8,8 @@ import { Button, Checkbox, Drawer, Typography } from '@mui/material'
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useState } from 'react'
-import { supabase } from '../config/supabase';
 import { KidProps } from '../App'
+import fetchChoresType from '../api/fetchChoresType'
 
 const buttonStyle = {
     position: 'fixed',
@@ -23,25 +23,19 @@ const buttonStyle = {
 }
 
 export type ChoresSheetDrawerProps = {
-    setAddChoresHistory: (choresId: Number[], resetChecked: () => void) => () => void;
+    setAddChoresHistory: (choresId: number[], resetChecked: () => void) => () => void;
     selectedKid: KidProps;
 }
 
 const ChoresSheetDrawer = ({setAddChoresHistory, selectedKid}: ChoresSheetDrawerProps) => {
-    const { data: chores_type } = useQuery(
-        supabase
-            .from("chores_type")
-            .select("*")
-            .order("point", {ascending: false})
-            .order("id")
-    );
+    const { data: chores_type } = useQuery(fetchChoresType(), { revalidateOnFocus: false, revalidateOnReconnect: false });
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const toggleDrawer = (newOpen: boolean) => () => {
         setDrawerOpen(newOpen);
     };
 
-    const [checked, setChecked] = useState<Number[]>([]);
+    const [checked, setChecked] = useState<number[]>([]);
     const handleToggle = (value: number) => () => {
         const currentIndex = checked.indexOf(value);
         const newChecked = [...checked];
@@ -50,14 +44,13 @@ const ChoresSheetDrawer = ({setAddChoresHistory, selectedKid}: ChoresSheetDrawer
         } else {
             newChecked.splice(currentIndex, 1);
         }
-  
         setChecked(newChecked);
     };
 
     const resetChecked = () => {
         setChecked([]);
+        setDrawerOpen(false);
         console.log("snackbarを出したい");
-        console.log("historyをfetchする");
     }
 
     return (
