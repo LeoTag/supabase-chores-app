@@ -5,17 +5,17 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardActionArea from '@mui/material/CardActionArea'
 import { Button, Checkbox, Drawer, Typography } from '@mui/material'
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useState } from 'react'
 import fetchChoresType from '../api/fetchChoresType'
 import { buttonStyle } from '../assets/styles';
 import { ChoresSheetDrawerProps } from '../config/types'
+import putSnackbar from './SnackBar'
 
 const ChoresSheetDrawer = ({setAddChoresHistory, selectedKid}: ChoresSheetDrawerProps) => {
     const { data: chores_type } = useQuery(fetchChoresType(), { revalidateOnFocus: false, revalidateOnReconnect: false });
-
-    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+    const [snackbar, setSnackbar] = useState<boolean>(false);
     const toggleDrawer = (newOpen: boolean) => () => {
         setDrawerOpen(newOpen);
     };
@@ -35,14 +35,12 @@ const ChoresSheetDrawer = ({setAddChoresHistory, selectedKid}: ChoresSheetDrawer
     const resetChecked = () => {
         setChecked([]);
         setDrawerOpen(false);
-        console.log("snackbarを出したい");
+        setSnackbar(true)
     }
 
     return (
         <Box padding={2}>
-            <Button onClick={toggleDrawer(true)} variant='contained' sx={buttonStyle} 
-                startIcon={<AddCircleIcon sx={{marginBottom: "6px", marginRight: 0, marginLeft: "7px"}} />}
-            >
+            <Button onClick={toggleDrawer(true)} variant='contained' sx={buttonStyle}>
                 お手伝いポイントを管理
             </Button>
 
@@ -75,19 +73,20 @@ const ChoresSheetDrawer = ({setAddChoresHistory, selectedKid}: ChoresSheetDrawer
                             </Card>
                         )
                     }
-                    <Button onClick={setAddChoresHistory(checked, resetChecked)} variant='contained'
-                        disabled={!checked.length}
-                    >
+                    <Button onClick={setAddChoresHistory(checked, resetChecked)} variant='contained' disabled={!checked.length}>
                         お手伝いポイントを付与
                     </Button>
                 </Box>
                 <hr style={{margin: "16px"}} />
                 <Box padding={2} sx={{textAlign: 'center'}} width={'100%'}>
-                    <Button variant='contained' disabled endIcon={<SettingsIcon />}>
+                    <Button variant='contained' disabled startIcon={<SettingsIcon />}>
                         お手伝い項目を管理<br />（未着手）
                     </Button>
                 </Box>
             </Drawer>
+            {
+                putSnackbar("ポイントを追加しました", snackbar, setSnackbar)
+            }
       </Box>
     )
 }

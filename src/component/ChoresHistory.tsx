@@ -14,13 +14,14 @@ import fetchChoresHistory from '../api/fetchChoresHistory'
  * @returns
  */
 const ChoresHistory = ({selectedKid, setTotalPoint, chores_history, count}:ChoresHistoryProps) => {
+    const [checked, setChecked] = useState<number[]>([]);
+
     useEffect(() => {
         if(chores_history === undefined) return;
         const result = chores_history?.reduce((a, b) => a + b.chores_type.point, 0);
         setTotalPoint(result);
     })
 
-    const [checked, setChecked] = useState<number[]>([]);
     const handleToggle = (value: number) => () => {
         const currentIndex = checked.indexOf(value);
         const newChecked = [...checked];
@@ -32,10 +33,9 @@ const ChoresHistory = ({selectedKid, setTotalPoint, chores_history, count}:Chore
         }
         setChecked(newChecked);
     };
-    
+
     const handleDeleteItems = () => async () => {
         const { error } = await supabase.from('chores_history').delete().in("id", checked);
-    
         if (error) {
             console.error(error);
         } else {
@@ -52,7 +52,7 @@ const ChoresHistory = ({selectedKid, setTotalPoint, chores_history, count}:Chore
     return (
         <Box>
             <Typography variant='h6'>{nowMonth}月のお手伝い履歴（{count}回）</Typography>
-            <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+            <List sx={{ width: '100%', bgcolor: 'background.paper', marginBottom: "40px" }}>
                 {
                 chores_history?.map((history) => {
                     const labelId = `checkbox-list-label-${history.id}`;
@@ -81,7 +81,7 @@ const ChoresHistory = ({selectedKid, setTotalPoint, chores_history, count}:Chore
             </List>
 
             {
-                checked.length > 0 && <Stack direction="row" spacing={2} position={'fixed'} bottom={20} left={0} right={0} sx={{ justifyContent: "center", alignItems: "center"}}>
+                checked.length > 0 && <Stack direction="row" spacing={2} position={'fixed'} bottom={0} left={0} right={0} padding={1} sx={{ justifyContent: "center", alignItems: "center", backgroundColor: "white"}}>
                     <Button onClick={handleResetChecked()} variant='outlined' color="primary">リセット</Button>
                     <Button onClick={handleDeleteItems()} variant='contained' color="error">選択項目を削除</Button>
                 </Stack>
