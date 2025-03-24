@@ -101,7 +101,7 @@ const App = () => {
                             </Stack>
                             
                             {
-                                chores_history && <ChoresHistory setTotalPoint={setTotalPoint} chores_history={chores_history} count={count} />
+                                chores_history && <ChoresHistory selectedKid={selectedKid} setTotalPoint={setTotalPoint} chores_history={chores_history} count={count} />
                             }
                         </TabPanel>
                     ))

@@ -14,6 +14,7 @@ export type ChoresSheetDrawerProps = {
 }
 
 export type ChoresHistoryProps = {
+    selectedKid: KidProps;
     setTotalPoint: (point: number) => void;
     chores_history: {
         id: number;

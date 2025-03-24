@@ -1,7 +1,10 @@
 import Box from '@mui/material/Box';
-import { Checkbox, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material'
+import { Button, Checkbox, List, ListItem, ListItemButton, ListItemText, Stack, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { ChoresHistoryProps } from '../config/types'
+import { supabase } from '../config/supabase'
+import { mutate } from 'swr'
+import fetchChoresHistory from '../api/fetchChoresHistory'
 
 /**
  * お手伝い履歴を取得
@@ -10,14 +13,14 @@ import { ChoresHistoryProps } from '../config/types'
  * @param count お手伝い履歴の件数
  * @returns
  */
-const ChoresHistory = ({setTotalPoint, chores_history, count}:ChoresHistoryProps) => {
+const ChoresHistory = ({selectedKid, setTotalPoint, chores_history, count}:ChoresHistoryProps) => {
     useEffect(() => {
         if(chores_history === undefined) return;
         const result = chores_history?.reduce((a, b) => a + b.chores_type.point, 0);
         setTotalPoint(result);
     })
 
-    const [checked, setChecked] = useState([0]);
+    const [checked, setChecked] = useState<number[]>([]);
     const handleToggle = (value: number) => () => {
         const currentIndex = checked.indexOf(value);
         const newChecked = [...checked];
@@ -27,9 +30,22 @@ const ChoresHistory = ({setTotalPoint, chores_history, count}:ChoresHistoryProps
         } else {
             newChecked.splice(currentIndex, 1);
         }
-  
         setChecked(newChecked);
     };
+    
+    const handleDeleteItems = () => async () => {
+        const { error } = await supabase.from('chores_history').delete().in("id", checked);
+    
+        if (error) {
+            console.error(error);
+        } else {
+            mutate(() => fetchChoresHistory(selectedKid.id), true);
+        }
+    }
+
+    const handleResetChecked = () => () => {
+        setChecked([])
+    }
 
     const nowMonth = new Date().getMonth() + 1;
 
@@ -63,6 +79,13 @@ const ChoresHistory = ({setTotalPoint, chores_history, count}:ChoresHistoryProps
                     );
                 })}
             </List>
+
+            {
+                checked.length > 0 && <Stack direction="row" spacing={2} position={'fixed'} bottom={20} left={0} right={0} sx={{ justifyContent: "center", alignItems: "center"}}>
+                    <Button onClick={handleResetChecked()} variant='outlined' color="primary">リセット</Button>
+                    <Button onClick={handleDeleteItems()} variant='contained' color="error">選択項目を削除</Button>
+                </Stack>
+            }
       </Box>
     )
 }
