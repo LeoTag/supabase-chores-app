@@ -1,19 +1,7 @@
 import Box from '@mui/material/Box';
 import { Checkbox, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
-
-type ChoresHistoryProps = {
-    setTotalPoint: (point: number) => void;
-    chores_history: {
-        id: number;
-        chores_type: {
-            title: string;
-            point: number;
-        };
-        created_at: string;
-    }[] | undefined;
-    count: number | null;
-}
+import { ChoresHistoryProps } from '../config/types'
 
 /**
  * お手伝い履歴を取得

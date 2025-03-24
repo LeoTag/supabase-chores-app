@@ -8,24 +8,9 @@ import { Button, Checkbox, Drawer, Typography } from '@mui/material'
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useState } from 'react'
-import { KidProps } from '../App'
 import fetchChoresType from '../api/fetchChoresType'
-
-const buttonStyle = {
-    position: 'fixed',
-    bottom: '10%',
-    right: '16px',
-    zIndex: 1000,
-    writingMode: 'vertical-rl',
-    textOrientation: 'upright',
-    padding: '10px 12px',
-    minWidth: '36px',
-}
-
-export type ChoresSheetDrawerProps = {
-    setAddChoresHistory: (choresId: number[], resetChecked: () => void) => () => void;
-    selectedKid: KidProps;
-}
+import { buttonStyle } from '../assets/styles';
+import { ChoresSheetDrawerProps } from '../config/types'
 
 const ChoresSheetDrawer = ({setAddChoresHistory, selectedKid}: ChoresSheetDrawerProps) => {
     const { data: chores_type } = useQuery(fetchChoresType(), { revalidateOnFocus: false, revalidateOnReconnect: false });
