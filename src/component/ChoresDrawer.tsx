@@ -81,10 +81,10 @@ const ChoresSheetDrawer = ({setAddChoresHistory, selectedKid}: ChoresSheetDrawer
                         お手伝いポイントを付与
                     </Button>
                 </Box>
-                <Box padding={2} sx={{textAlign: 'center'}} position={'absolute'} bottom={16} width={'100%'}>
-                    <hr style={{marginBottom: "16px"}} />
-                    <Button variant='contained' endIcon={<SettingsIcon />}>
-                        お手伝い項目を管理（未）
+                <hr style={{margin: "16px"}} />
+                <Box padding={2} sx={{textAlign: 'center'}} width={'100%'}>
+                    <Button variant='contained' disabled endIcon={<SettingsIcon />}>
+                        お手伝い項目を管理<br />（未着手）
                     </Button>
                 </Box>
             </Drawer>

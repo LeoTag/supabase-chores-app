@@ -6,7 +6,7 @@ import TabPanel from '@mui/lab/TabPanel';
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 import { mutate } from "swr";
 import { AppBar, List, ListItem, ListItemText, Tabs, ThemeProvider, Typography } from '@mui/material'
-import ChoresSheetDrawer from './component/ChoresSheet';
+import ChoresSheetDrawer from './component/ChoresDrawer';
 import ChoresHistory from './component/ChoresHistory'
 import { supabase } from './config/supabase';
 import fetchChoresHistory from './api/fetchChoresHistory'

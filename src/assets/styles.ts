@@ -15,7 +15,7 @@ export const muiThemeStyle = createTheme({
 
 export const buttonStyle = {
     position: 'fixed',
-    bottom: '10%',
+    bottom: '30%',
     right: '16px',
     zIndex: 1000,
     writingMode: 'vertical-rl',
