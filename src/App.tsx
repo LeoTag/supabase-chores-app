@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import Stack from '@mui/material/Stack';
@@ -41,7 +41,13 @@ const App = () => {
     const [totalPoint, setTotalPoint] = useState(0);
     const [tabValue, setTabValue] = useState(1);
 
-    const handleChange = (_e: React.SyntheticEvent, newValue: number) => {
+    useEffect(() => {
+        if(selectedKid.id) return;
+        if(!kids || kids.length === 0) return;
+        setSelectedKid(kids[0]);
+    }, [kids]);
+    
+    const handleTabChange = (_e: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
     }
 
@@ -80,7 +86,7 @@ const App = () => {
                 <AppBar position="sticky">
                     <Tabs
                         value={tabValue}
-                        onChange={handleChange}
+                        onChange={handleTabChange}
                         indicatorColor="secondary"
                         textColor="inherit"
                         variant="fullWidth"
@@ -108,7 +114,7 @@ const App = () => {
                                             <ListItemText primary={`基本のお小遣い：${kid.school_grade.point.toLocaleString()}円`}/>
                                         </ListItem>
                                         <ListItem disablePadding>
-                                            <ListItemText primary={`お手伝いポイント：${totalPoint.toLocaleString()}`}/>
+                                            <ListItemText primary={`お手伝いポイント：${totalPoint.toLocaleString()}P`}/>
                                         </ListItem>
                                     </List>
                                 </Stack>
