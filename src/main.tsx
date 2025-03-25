@@ -7,8 +7,10 @@ import App from './App.tsx'
 import { SpeedInsights } from "@vercel/speed-insights/react"
 
 createRoot(document.getElementById('root')!).render(
-    <StrictMode>
+    // <StrictMode>
+    <>
         <SpeedInsights />
         <App />
-    </StrictMode>,
+    </>
+    // </StrictMode>,
 )

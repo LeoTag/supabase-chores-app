@@ -1,32 +1,38 @@
-import { useEffect, useState } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
-import Stack from '@mui/material/Stack';
-import TabPanel from '@mui/lab/TabPanel';
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 import { mutate } from "swr";
-import { AppBar, List, ListItem, ListItemText, Tabs, ThemeProvider, Typography } from '@mui/material'
-import ChoresSheetDrawer from './component/ChoresDrawer';
-import ChoresHistory from './component/ChoresHistory'
+import { AppBar, Tabs, ThemeProvider } from '@mui/material'
+import ChoresSheetDrawer from './page/ChoresDrawer';
 import { supabase } from './config/supabase';
-import fetchChoresHistory from './api/fetchChoresHistory'
-import fetchKids from './api/fetchKids'
 import { muiThemeStyle } from './assets/styles'
+import TabPanelContent from './page/ChoresHistory'
 import { KidProps } from './config/types'
 
 const App = () => {
+    // ローカル以外ではコンソール無効
+    if (import.meta.env.VITE_APP_ENV !== 'local') {
+        console.log = console.info = console.debug = console.warn = console.error = () => {};
+    }
+
+    console.log("===============================================");
     const [selectedKid, setSelectedKid] = useState({} as KidProps);
-    const [totalPoint, setTotalPoint] = useState(0);
     const [tabValue, setTabValue] = useState(1);
 
-    // DB Connect
-    const { data: kids } = useQuery(fetchKids(), { revalidateOnFocus: false, revalidateOnReconnect: false,});
-    const { data: chores_history, count } = useQuery(
-        fetchChoresHistory(selectedKid.id),
-        { revalidateOnFocus: true, revalidateOnReconnect: true,}
+    const { data: kids } = useQuery(
+        supabase
+            .from("kids")
+            .select(`
+                id, name, thumbnail, 
+                school_grade(grade, point)
+            `)
+            .order("id"),
+            { revalidateOnFocus: false, revalidateOnReconnect: false,}
     );
-    
-    const handleTabChange = (_e: React.SyntheticEvent, newValue: number) => {
+
+    console.log("▼App：", selectedKid.name)
+    const handleTabChange = () => (_e: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
     }
 
@@ -34,7 +40,7 @@ const App = () => {
         if(selectedKid.id) return;
         if(!kids || kids.length === 0) return;
         setSelectedKid(kids[0]);
-    }, [kids]);
+    }, [selectedKid]);
 
     /**
      * お手伝い履歴を追加
@@ -56,10 +62,22 @@ const App = () => {
             console.error(error);
         } else {
             resetChecked();
-            mutate(() => fetchChoresHistory(selectedKid.id), true);
+            mutate(() => supabase
+                    .from("chores_history")
+                    .select(`
+                        *,
+                        kids(name),
+                        chores_type(title, point)
+                    `, { count: "exact" })
+                    .eq('kid_id', 1)
+                    .filter('created_at', 'gte', `2025-03-01`)
+                    .filter('created_at', 'lt', `2025-04-01`)
+                    .order("created_at", { ascending: false })
+                    .order("id", { ascending: true }),
+                true);
         }
     };
-
+    
     return (
         <ThemeProvider theme={muiThemeStyle}>
             <TabContext value={tabValue}>
@@ -73,38 +91,15 @@ const App = () => {
                     >
                         {
                             kids?.map((kid) => (
-                                <Tab label={kid.name} value={kid.id} key={kid.id} onClick={()=>{
-                                    setSelectedKid(kid)
-                                }} />
+                                <Tab label={kid.name} value={kid.id} key={kid.id} onClick={
+                                    () => setSelectedKid(kid)
+                                } />
                             ))
                         }
                     </Tabs>
                 </AppBar>
                 {
-                    kids?.map((kid) => (
-                        <TabPanel value={kid.id} key={kid.id} sx={{padding: 2}}>
-                            <Stack direction="row" spacing={4} sx={{ alignItems: 'center'}} marginBottom={1} padding={2} paddingTop={1} className="p-chores__kids">
-                                <Stack><img src={`assets/images/${kid.thumbnail}`} width={130} alt="" /></Stack>
-                                <Stack>
-                                    <Typography variant="h5" component="h1">{kid.name}</Typography>
-                                    <Typography variant="body1">{kid.school_grade.grade}</Typography>
-
-                                    <List>
-                                        <ListItem disablePadding>
-                                            <ListItemText primary={`基本のお小遣い：${kid.school_grade.point.toLocaleString()}円`}/>
-                                        </ListItem>
-                                        <ListItem disablePadding>
-                                            <ListItemText primary={`お手伝いポイント：${totalPoint.toLocaleString()}P`}/>
-                                        </ListItem>
-                                    </List>
-                                </Stack>
-                            </Stack>
-                            
-                            {
-                                chores_history && <ChoresHistory selectedKid={selectedKid} setTotalPoint={setTotalPoint} chores_history={chores_history} count={count} />
-                            }
-                        </TabPanel>
-                    ))
+                    selectedKid.id && <TabPanelContent selectedKid={selectedKid} key={selectedKid.id} />
                 }
             </TabContext>
             <ChoresSheetDrawer setAddChoresHistory={setAddChoresHistory} selectedKid={selectedKid} />

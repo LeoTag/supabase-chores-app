@@ -10,7 +10,7 @@ import { useState } from 'react'
 import fetchChoresType from '../api/fetchChoresType'
 import { buttonStyle } from '../assets/styles';
 import { ChoresSheetDrawerProps } from '../config/types'
-import putSnackbar from './SnackBar'
+import putSnackbar from '../component/SnackBar'
 
 const ChoresSheetDrawer = ({setAddChoresHistory, selectedKid}: ChoresSheetDrawerProps) => {
     const { data: chores_type } = useQuery(fetchChoresType(), { revalidateOnFocus: false, revalidateOnReconnect: false });

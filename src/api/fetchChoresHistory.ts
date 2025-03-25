@@ -1,12 +1,14 @@
 import { supabase } from "../config/supabase"
 
-const fetchChoresHistory = (kidId: number) => {
+const fetchChoresHistory = (kidId: number, startDate?: Date) => {
     // 当月の取得
-    const nowDate = new Date();
+    const nowDate = startDate ? startDate: new Date();
     const nowYear = nowDate.getFullYear();
     const nowMonth = nowDate.getMonth() + 1;
     const nowMonthDigits = ("0"+nowMonth).slice(-2);
     const nextMonthDigits = ("0"+(nowMonth+1)).slice(-2);
+    console.log(nowYear, nowMonthDigits, nextMonthDigits);
+    // console.trace()
     
     return supabase
         .from("chores_history")
