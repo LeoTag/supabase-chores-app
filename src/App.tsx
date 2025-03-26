@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
@@ -36,6 +36,12 @@ const App = () => {
     const handleTabChange = (_e: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
     }
+
+    useEffect(() => {
+        if(selectedKid.id) return;
+        if(!kids || kids.length === 0) return;
+        setSelectedKid(kids[0]);
+    }, [kids]);
 
     /**
      * お手伝い履歴を追加
