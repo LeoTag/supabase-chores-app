@@ -18,20 +18,13 @@ export const KidProfile = memo(({
 }) => {
     console.log("▼KidProfile");
     return (
-        <Stack direction="row" spacing={4} sx={{ alignItems: 'center'}} marginBottom={1} padding={2} paddingTop={1} className="p-chores__kids">
-            <Stack><img src={`assets/images/${selectedKid.thumbnail}`} width={130} alt="" /></Stack>
+        <Stack direction="row" spacing={2} sx={{ alignItems: 'center'}} marginBottom={1} padding={2} paddingTop={1} className="p-chores__kids">
+            <Stack width={110} height={110}><img src={`assets/images/${selectedKid.thumbnail}`} alt="" /></Stack>
             <Stack>
                 <Typography variant="h5" component="h1">{selectedKid.name}</Typography>
-                <Typography variant="body1">{selectedKid.school_grade.grade}</Typography>
-
-                <List>
-                    <ListItem disablePadding>
-                        <ListItemText primary={`基本のお小遣い：${selectedKid.school_grade.point.toLocaleString()}円`}/>
-                    </ListItem>
-                    <ListItem disablePadding>
-                        <ListItemText primary={`お手伝いポイント：${totalPoint.toLocaleString()}P`}/>
-                    </ListItem>
-                </List>
+                <Typography variant="subtitle2">{selectedKid.school_grade.grade}</Typography>
+                <Typography variant="body2">基本のお小遣い：{selectedKid.school_grade.point.toLocaleString()}円</Typography>
+                <Typography variant="body2">お手伝いポイント：{totalPoint.toLocaleString()}P</Typography>
             </Stack>
         </Stack>
     )
@@ -93,7 +86,7 @@ const ChoresHistoryList = memo(({
         <>
         {
             !count
-            ? <Typography textAlign={'center'}>履歴はありません</Typography>
+            ? <Typography variant='body1' textAlign={'center'} marginTop={5}>履歴はありません</Typography>
             : <List sx={{ width: '100%', bgcolor: 'background.paper', marginBottom: "40px" }}>
                 {
                 chores_history?.map((history) => {
