@@ -10,7 +10,6 @@ import { muiThemeStyle } from './assets/styles'
 import TabPanelContent from './page/ChoresHistory'
 import { KidProps } from './config/types'
 import fetchChoresHistory from './api/fetchChoresHistory'
-import { TabPanel } from '@mui/lab'
 
 const App = () => {
     // ローカル以外ではコンソール無効
