@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
@@ -9,6 +9,8 @@ import { supabase } from './config/supabase';
 import { muiThemeStyle } from './assets/styles'
 import TabPanelContent from './page/ChoresHistory'
 import { KidProps } from './config/types'
+import fetchChoresHistory from './api/fetchChoresHistory'
+import { TabPanel } from '@mui/lab'
 
 const App = () => {
     // ローカル以外ではコンソール無効
@@ -32,15 +34,9 @@ const App = () => {
     );
 
     console.log("▼App：", selectedKid.name)
-    const handleTabChange = () => (_e: React.SyntheticEvent, newValue: number) => {
+    const handleTabChange = (_e: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
     }
-
-    useEffect(() => {
-        if(selectedKid.id) return;
-        if(!kids || kids.length === 0) return;
-        setSelectedKid(kids[0]);
-    }, [selectedKid]);
 
     /**
      * お手伝い履歴を追加
@@ -62,25 +58,13 @@ const App = () => {
             console.error(error);
         } else {
             resetChecked();
-            mutate(() => supabase
-                    .from("chores_history")
-                    .select(`
-                        *,
-                        kids(name),
-                        chores_type(title, point)
-                    `, { count: "exact" })
-                    .eq('kid_id', 1)
-                    .filter('created_at', 'gte', `2025-03-01`)
-                    .filter('created_at', 'lt', `2025-04-01`)
-                    .order("created_at", { ascending: false })
-                    .order("id", { ascending: true }),
-                true);
+            mutate(() => fetchChoresHistory(selectedKid.id), true);
         }
     };
     
     return (
         <ThemeProvider theme={muiThemeStyle}>
-            <TabContext value={tabValue}>
+            <TabContext value={tabValue} key={selectedKid.id}>
                 <AppBar position="sticky">
                     <Tabs
                         value={tabValue}
@@ -91,15 +75,15 @@ const App = () => {
                     >
                         {
                             kids?.map((kid) => (
-                                <Tab label={kid.name} value={kid.id} key={kid.id} onClick={
-                                    () => setSelectedKid(kid)
-                                } />
+                                <Tab label={kid.name} value={kid.id} key={kid.id} onClick={() => setSelectedKid(kid)} />
                             ))
                         }
                     </Tabs>
                 </AppBar>
                 {
-                    selectedKid.id && <TabPanelContent selectedKid={selectedKid} key={selectedKid.id} />
+                    kids?.map((kid) => (
+                        <TabPanelContent selectedKid={kid} key={kid.id} />
+                    ))
                 }
             </TabContext>
             <ChoresSheetDrawer setAddChoresHistory={setAddChoresHistory} selectedKid={selectedKid} />

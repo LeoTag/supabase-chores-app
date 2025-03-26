@@ -6,9 +6,9 @@ const fetchChoresHistory = (kidId: number, startDate?: Date) => {
     const nowYear = nowDate.getFullYear();
     const nowMonth = nowDate.getMonth() + 1;
     const nowMonthDigits = ("0"+nowMonth).slice(-2);
-    const nextMonthDigits = ("0"+(nowMonth+1)).slice(-2);
-    console.log(nowYear, nowMonthDigits, nextMonthDigits);
-    // console.trace()
+    const nextMonthDigits = nowMonth !== 12
+                            ? ("0"+(nowMonth+1)).slice(-2)
+                            : "01"
     
     return supabase
         .from("chores_history")
