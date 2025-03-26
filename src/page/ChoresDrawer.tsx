@@ -4,13 +4,14 @@ import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardActionArea from '@mui/material/CardActionArea'
-import { Button, Checkbox, Drawer, Typography } from '@mui/material'
-import SettingsIcon from '@mui/icons-material/Settings';
+import { Button, Checkbox, Divider, Drawer, Typography } from '@mui/material'
 import { useState } from 'react'
 import fetchChoresType from '../api/fetchChoresType'
 import { buttonStyle } from '../assets/styles';
 import { ChoresSheetDrawerProps } from '../config/types'
 import putSnackbar from '../component/SnackBar'
+import ChoresRegistionForm from './ChoresRegistionForm'
+import ChoresRegistionModal from './ChoresRegistionForm'
 
 const ChoresSheetDrawer = ({setAddChoresHistory, selectedKid}: ChoresSheetDrawerProps) => {
     const { data: chores_type } = useQuery(fetchChoresType(), { revalidateOnFocus: false, revalidateOnReconnect: false });
@@ -77,11 +78,9 @@ const ChoresSheetDrawer = ({setAddChoresHistory, selectedKid}: ChoresSheetDrawer
                         お手伝いポイントを付与
                     </Button>
                 </Box>
-                <hr style={{margin: "16px"}} />
+                <Divider />
                 <Box padding={2} sx={{textAlign: 'center'}} width={'100%'}>
-                    <Button variant='contained' disabled startIcon={<SettingsIcon />}>
-                        お手伝い項目を管理<br />（未着手）
-                    </Button>
+                    <ChoresRegistionModal />
                 </Box>
             </Drawer>
             {

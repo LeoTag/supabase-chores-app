@@ -16,7 +16,6 @@ export const KidProfile = memo(({
     selectedKid:KidProps
     totalPoint: number
 }) => {
-    console.log("▼KidProfile");
     return (
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center'}} marginBottom={1} padding={2} paddingTop={1} className="p-chores__kids">
             <Stack width={110} height={110}><img src={`assets/images/${selectedKid.thumbnail}`} alt="" /></Stack>
@@ -41,7 +40,6 @@ const ChoresHistoryList = memo(({
     setTotalPoint: React.Dispatch<React.SetStateAction<number>>
     setHistoryCount: React.Dispatch<React.SetStateAction<number>>
 }) => {
-    console.log("▼ChoresHistoryList");
     const [checked, setChecked] = useState<number[]>([]);
     
     const { data: chores_history, count } = useQuery(

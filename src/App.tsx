@@ -17,7 +17,7 @@ const App = () => {
         console.log = console.info = console.debug = console.warn = console.error = () => {};
     }
 
-    console.log("===============================================");
+    console.log("=====================");
     const [selectedKid, setSelectedKid] = useState({} as KidProps);
     const [tabValue, setTabValue] = useState(1);
 
