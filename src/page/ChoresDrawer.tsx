@@ -56,11 +56,18 @@ const ChoresSheetDrawer = ({
 
             <Drawer open={drawerOpen} onClose={toggleDrawer(false)} anchor="right">
                 <Box padding={2} sx={{textAlign: 'center'}}>
-                    <img src={`assets/images/${selectedKid.thumbnail}`} width={70} alt="" style={{display: 'inline-block'}} />
-                    <Typography variant='h6' marginBottom={1} color='primary'>
-                        {selectedKid.name}
-                        <Typography variant='body2' color='textPrimary' sx={{display: 'inline-block'}}>へのお手伝いポイント</Typography>
-                    </Typography>
+                    <Stack direction="row" justifyContent="space-evenly" alignItems="center">
+                        <Stack>
+                            <img src={`assets/images/${selectedKid.thumbnail}`} width={70} alt="" />
+                        </Stack>
+                        <Stack>
+                            <Typography variant='h6' color='primary'>
+                                {selectedKid.name}
+                                <Typography variant='body2' color='textPrimary' sx={{display: "inline"}}>への</Typography>
+                            </Typography>
+                            <Typography variant='body2' color='textPrimary'>お手伝いポイント</Typography>
+                        </Stack>
+                    </Stack>
                     <Box textAlign={'right'}>
                         <Button variant='text' color="primary" onClick={() => setModalOpen(true)} startIcon={<SettingsIcon />}>
                             項目設定
