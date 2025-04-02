@@ -180,14 +180,14 @@ const ChoresEditListItem = ({
                 {
                     !editState ? 
                         // 通常時：テキストのみ表示
-                        <Stack direction="column">
+                        <Stack direction="column" flex={9} >
                             <Typography variant='body1'>{type.title}</Typography>
                             <Typography variant='body2'>{type.point}P</Typography>
                             <Typography variant='body2'>{type.description}</Typography>
                         </Stack>
                         :
                         // 編集時：テキストフィールドで編集可能に
-                        <Stack direction="column" spacing={.5}>
+                        <Stack direction="column" spacing={.5} flex={9}>
                             <TextField
                                 defaultValue={type.title}
                                 {...register(`title`, { required: true })}
@@ -211,7 +211,7 @@ const ChoresEditListItem = ({
                             />
                         </Stack>
                 }
-                <Stack direction="column" spacing={1} justifyContent="space-between">
+                <Stack direction="column" flex={1} spacing={1} justifyContent="space-between">
                 {
                     !editState ? 
                         <Button variant='contained' size="small" onClick={() => setEditState(true)}>編集</Button>
@@ -287,9 +287,9 @@ const ChoresRegistionModal = ({
         >
             <Box sx={modalStyle}>
                 <TabContext value={tabValue}>
-                    <TabList onChange={handleTabChange} aria-label="lab API tabs example" sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                        <Tab label="項目の新規作成" value="modal-tab1" sx={{width: "50%"}}/>
-                        <Tab label="項目を編集" value="modal-tab2" sx={{width: "50%"}}/>
+                    <TabList onChange={handleTabChange} variant="fullWidth" sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <Tab label="項目の新規作成" value="modal-tab1" />
+                        <Tab label="項目を編集" value="modal-tab2" />
                     </TabList>
                     
                     <TabPanel value="modal-tab1" style={{overflow:'scroll'}}>

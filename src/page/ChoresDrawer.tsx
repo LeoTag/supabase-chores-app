@@ -22,9 +22,9 @@ const ChoresSheetDrawer = ({
 }
 ) => {
     const { data: chores_type } = useQuery(fetchChoresType(), { revalidateOnFocus: false, revalidateOnReconnect: false });
-    const [modalOpen, setModalOpen] = useState(true);
+    const [modalOpen, setModalOpen] = useState(false);
 
-    const [drawerOpen, setDrawerOpen] = useState<boolean>(true);
+    const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
     const [snackbar, setSnackbar] = useState<boolean>(false);
     const toggleDrawer = (newOpen: boolean) => () => {
         setDrawerOpen(newOpen);
