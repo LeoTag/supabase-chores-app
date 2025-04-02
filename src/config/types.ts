@@ -8,12 +8,14 @@ export type KidProps = {
     }
 }
 
-export type ChoresSheetDrawerProps = {
-    setAddChoresHistory: (choresId: number[], resetChecked: () => void) => () => void;
-    selectedKid: KidProps;
-}
-
 export type ChoresHistoryProps = {
     selectedKid: KidProps;
     setTotalPoint: (point: number) => void;
+}
+
+export type ChoresTypeProps = {
+    description: string | null;
+    id: number;
+    point: number;
+    title: string;
 }

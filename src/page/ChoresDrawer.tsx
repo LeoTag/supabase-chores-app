@@ -8,14 +8,20 @@ import { Button, Checkbox, Divider, Drawer, Typography } from '@mui/material'
 import { useState } from 'react'
 import fetchChoresType from '../api/fetchChoresType'
 import { buttonStyle } from '../assets/styles';
-import { ChoresSheetDrawerProps } from '../config/types'
+import { KidProps } from '../config/types'
 import putSnackbar from '../component/SnackBar'
-import ChoresRegistionForm from './ChoresRegistionForm'
 import ChoresRegistionModal from './ChoresRegistionForm'
 
-const ChoresSheetDrawer = ({setAddChoresHistory, selectedKid}: ChoresSheetDrawerProps) => {
+const ChoresSheetDrawer = ({
+    setAddChoresHistory,
+    selectedKid
+}: {
+    setAddChoresHistory: (choresId: number[], resetChecked: () => void) => () => void;
+    selectedKid: KidProps;
+}
+) => {
     const { data: chores_type } = useQuery(fetchChoresType(), { revalidateOnFocus: false, revalidateOnReconnect: false });
-    const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+    const [drawerOpen, setDrawerOpen] = useState<boolean>(true);
     const [snackbar, setSnackbar] = useState<boolean>(false);
     const toggleDrawer = (newOpen: boolean) => () => {
         setDrawerOpen(newOpen);
@@ -47,7 +53,7 @@ const ChoresSheetDrawer = ({setAddChoresHistory, selectedKid}: ChoresSheetDrawer
 
             <Drawer open={drawerOpen} onClose={toggleDrawer(false)} anchor="right">
                 <Box padding={2} sx={{textAlign: 'center'}}>
-                    <img src={`assets/images/${selectedKid.thumbnail}`} width={80} alt="" style={{display: 'inline-block'}} />
+                    <img src={`assets/images/${selectedKid.thumbnail}`} width={70} alt="" style={{display: 'inline-block'}} />
                     <Typography variant='h6' marginBottom={1} color='primary'>
                         {selectedKid.name}
                         <Typography variant='body2' color='textPrimary' sx={{display: 'inline-block'}}>へのお手伝いポイント</Typography>
