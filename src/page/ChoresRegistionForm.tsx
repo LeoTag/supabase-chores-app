@@ -1,4 +1,4 @@
-import { Box, Button, InputAdornment, Snackbar, SnackbarCloseReason, Stack, Tab, TextField, Typography } from '@mui/material'
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, InputAdornment, Snackbar, SnackbarCloseReason, Stack, Tab, TextField, Typography } from '@mui/material'
 import Modal from '@mui/material/Modal';
 import { Dispatch, memo, useState } from 'react'
 import { choresListEdit_closeIcon, choresTypeEdit_header, modalStyle, Mui_Button_defaultStyle, Mui_TextField_defaultStyle } from '../assets/styles'
@@ -14,24 +14,29 @@ import { mutate } from 'swr'
  * お手伝い項目の新規登録
  */
 const ChoresRegistrationForm = () => {
-    // FIXME: バリデーション処理追加
-    const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<ChoresTypeProps>({
+    const { register, handleSubmit, reset, formState: { errors } } = useForm<ChoresTypeProps>({
         defaultValues: {title: "", point: undefined, description: ""}
     })
     
     const [snackbarState, setSnackbarState] = useState<boolean>(false);
+    const [snackbarMsg, setSnackbarMsg] = useState<string>("");
     const handleSnackbarClose = (_e: React.SyntheticEvent | Event, reason?: SnackbarCloseReason,) => {
         if (reason === 'clickaway') return;
         setSnackbarState(false);
     };
 
     const onSubmit: SubmitHandler<ChoresTypeProps> = async (data) => {
+        // FIXME: バリデーション処理追加
+
         const { error } = await supabase.from('chores_type').insert(data);
     
         if (error) {
             console.error(error);
+            setSnackbarMsg("更新できませんでした")
+            setSnackbarState(true);
         }else{
             reset()
+            setSnackbarMsg("追加しました")
             setSnackbarState(true);
         }
     }
@@ -42,9 +47,9 @@ const ChoresRegistrationForm = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Snackbar
                     open={snackbarState}
-                    autoHideDuration={2000}
+                    autoHideDuration={3000}
                     onClose={handleSnackbarClose}
-                    message="追加しました"
+                    message={snackbarMsg}
                 />
                 <Box marginBottom={2}>
                     <Stack flexDirection="row" alignItems="center" justifyContent="space-between" marginBottom={1}>
@@ -58,6 +63,7 @@ const ChoresRegistrationForm = () => {
                         <TextField
                             size="small"
                             {...register(`point`, { required: true })}
+                            type='number'
                             slotProps={{
                                 input: {
                                     endAdornment: <InputAdornment position="end">P</InputAdornment>,
@@ -74,7 +80,7 @@ const ChoresRegistrationForm = () => {
                         sx={{width: "100%"}}
                     />
                     {errors.title && <Typography color='error' variant='body2'>タイトルを入力してください</Typography>}
-                    {errors.point && <Typography color='error' variant='body2'>ポイントを入力してください</Typography>}
+                    {errors.point && <Typography color='error' variant='body2'>ポイントを半角数字で入力してください</Typography>}
                 </Box>
 
                 <Box textAlign={'center'}>
@@ -86,16 +92,57 @@ const ChoresRegistrationForm = () => {
     )
 }
 
+/**
+ * お手伝い項目の削除ダイアログ
+ * 削除の最終確認＆削除実行
+ */
+const DeleteConfirmDialog = ({
+    type,
+    dialogOpen,
+    setDialogOpen
+}:{
+    type: ChoresTypeProps,
+    dialogOpen: boolean,
+    setDialogOpen: Dispatch<React.SetStateAction<boolean>>
+}) => {
+    
+    const deleteChores = () => async () => {
+        const { error } = await supabase.from('chores_type').delete().eq("id", type.id);
+    
+        if (error) {
+            console.error(error);
+        }else{
+            mutate(() => supabase.from('chores_type').delete().eq("id", type.id))
+            setDialogOpen(false)
+        }
+    }
+    return (
+    <>
+        <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+        <DialogContent>
+            <DialogContentText><strong>{type.title}</strong>を削除しますがよろしいですか？</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+            <Button onClick={() => setDialogOpen(false)} autoFocus>キャンセル</Button>
+            <Button color='error' onClick={deleteChores()}>削除する</Button>
+        </DialogActions>
+        </Dialog>
+        </>
+    );
+}
+
 const ChoresEditListItem = ({
     type
 }:{
     type: ChoresTypeProps
 }) => {
     // FIXME: Zod入れてバリデーションしたい
-    const [editState, setEditState] = useState(false)
-    const {register, handleSubmit, reset, watch, formState: { errors, isDirty }} = useForm<ChoresTypeProps>({
+    const [editState, setEditState] = useState<boolean>(false)
+    const {register, handleSubmit, reset, formState: { errors, isDirty }} = useForm<ChoresTypeProps>({
         defaultValues: type
     })
+
+    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
     const [snackbarState, setSnackbarState] = useState<boolean>(false);
     const handleSnackbarClose = (_e: React.SyntheticEvent | Event, reason?: SnackbarCloseReason,) => {
@@ -111,19 +158,10 @@ const ChoresEditListItem = ({
         }else{
             mutate(() => supabase.from('chores_type').upsert(data))
             setSnackbarState(true);
+            setEditState(false)
         }
     }
 
-    const handleDelete = () => async () => {
-        const { error } = await supabase.from('chores_type').delete().eq("id", type.id);
-    
-        if (error) {
-            console.error(error);
-        }else{
-            mutate(() => supabase.from('chores_type').delete().eq("id", type.id))
-            setSnackbarState(true);
-        }
-    }
     const handleEditClose = () => () => {
         reset()
         setEditState(false)
@@ -159,11 +197,12 @@ const ChoresEditListItem = ({
                             
                             <TextField
                                 defaultValue={type.point}
+                                type='number'
                                 {...register(`point`, { required: true })}
                                 slotProps={{input: {endAdornment: <InputAdornment position="end">P</InputAdornment>}}}
                                 sx={Mui_TextField_defaultStyle}
                             />
-                            {errors.point && <Typography color='error' variant='body2'>ポイントを入力してください</Typography>}
+                            {errors.point && <Typography color='error' variant='body2'>ポイントを半角数字で入力してください</Typography>}
                             <TextField
                                 defaultValue={type.description ?? ''}
                                 placeholder='説明文を入力してください'
@@ -181,12 +220,13 @@ const ChoresEditListItem = ({
                             <CloseIcon onClick={handleEditClose()} sx={choresListEdit_closeIcon} />
                             <Button variant='outlined' type='submit' disabled={!isDirty} sx={Mui_Button_defaultStyle}>更新</Button>
                             <Button variant='outlined' color='error' sx={Mui_Button_defaultStyle}
-                                onClick={handleDelete()}>削除</Button>
+                                onClick={() => setDialogOpen(true)}>削除</Button>
                         </Stack>
                 }
                 </Stack>
             </Stack>
         </form>
+        <DeleteConfirmDialog type={type} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />
         </>
     )
 }
