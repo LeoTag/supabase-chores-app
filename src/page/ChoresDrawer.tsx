@@ -11,6 +11,7 @@ import { buttonStyle } from '../assets/styles';
 import { KidProps } from '../config/types'
 import putSnackbar from '../component/SnackBar'
 import ChoresRegistionModal from './ChoresRegistionForm'
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const ChoresSheetDrawer = ({
     setAddChoresHistory,
@@ -21,6 +22,8 @@ const ChoresSheetDrawer = ({
 }
 ) => {
     const { data: chores_type } = useQuery(fetchChoresType(), { revalidateOnFocus: false, revalidateOnReconnect: false });
+    const [modalOpen, setModalOpen] = useState(true);
+
     const [drawerOpen, setDrawerOpen] = useState<boolean>(true);
     const [snackbar, setSnackbar] = useState<boolean>(false);
     const toggleDrawer = (newOpen: boolean) => () => {
@@ -58,6 +61,11 @@ const ChoresSheetDrawer = ({
                         {selectedKid.name}
                         <Typography variant='body2' color='textPrimary' sx={{display: 'inline-block'}}>へのお手伝いポイント</Typography>
                     </Typography>
+                    <Box textAlign={'right'}>
+                        <Button variant='text' color="primary" onClick={() => setModalOpen(true)} startIcon={<SettingsIcon />}>
+                            項目設定
+                        </Button>
+                    </Box>
                     {
                         chores_type?.map(chores => 
                             <Card className="p-chores__card" key={chores.id}>
@@ -86,10 +94,11 @@ const ChoresSheetDrawer = ({
                 </Box>
                 <Divider />
                 <Box padding={2} sx={{textAlign: 'center'}} width={'100%'}>
-                    <ChoresRegistionModal />
+                    <ChoresRegistionModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
                 </Box>
             </Drawer>
             {
+                // FIXME
                 putSnackbar("ポイントを追加しました", snackbar, setSnackbar)
             }
       </Box>

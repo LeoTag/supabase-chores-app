@@ -1,18 +1,19 @@
 import { Box, Button, InputAdornment, Snackbar, SnackbarCloseReason, Stack, Tab, TextField, Typography } from '@mui/material'
 import Modal from '@mui/material/Modal';
-import SettingsIcon from '@mui/icons-material/Settings';
-import { memo, useEffect, useState } from 'react'
-import { modalStyle } from '../assets/styles'
+import { Dispatch, memo, useState } from 'react'
+import { choresListEdit_closeIcon, choresTypeEdit_header, modalStyle, Mui_Button_defaultStyle, Mui_TextField_defaultStyle } from '../assets/styles'
 import { useForm, SubmitHandler } from "react-hook-form"
 import { supabase } from '../config/supabase'
 import { useQuery } from '@supabase-cache-helpers/postgrest-swr'
 import { ChoresTypeProps } from '../config/types'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
+import CloseIcon from '@mui/icons-material/Close';
+import { mutate } from 'swr'
 
 /**
  * お手伝い項目の新規登録
  */
-const ChoresRegistrationForm = memo(() => {
+const ChoresRegistrationForm = () => {
     // FIXME: バリデーション処理追加
     const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<ChoresTypeProps>({
         defaultValues: {title: "", point: undefined, description: ""}
@@ -83,20 +84,114 @@ const ChoresRegistrationForm = memo(() => {
         }
         </>
     )
-})
+}
 
+const ChoresEditListItem = ({
+    type
+}:{
+    type: ChoresTypeProps
+}) => {
+    // FIXME: Zod入れてバリデーションしたい
+    const [editState, setEditState] = useState(false)
+    const {register, handleSubmit, reset, watch, formState: { errors, isDirty }} = useForm<ChoresTypeProps>({
+        defaultValues: type
+    })
 
-const ChoresEditForm = memo(() => {
-    const {
-        register,
-        handleSubmit,
-        watch,
-        formState: { errors },
-    } = useForm<ChoresTypeProps[]>()
+    const [snackbarState, setSnackbarState] = useState<boolean>(false);
+    const handleSnackbarClose = (_e: React.SyntheticEvent | Event, reason?: SnackbarCloseReason,) => {
+        if (reason === 'clickaway') return;
+        setSnackbarState(false);
+    };
 
-    const onSubmit: SubmitHandler<ChoresTypeProps[]> = (data) => console.log(data)
-    // console.log(watch()[0]?.title) 
+    const onSubmit: SubmitHandler<ChoresTypeProps> = async (data) => {
+        const { error } = await supabase.from('chores_type').upsert(data);
     
+        if (error) {
+            console.error(error);
+        }else{
+            mutate(() => supabase.from('chores_type').upsert(data))
+            setSnackbarState(true);
+        }
+    }
+
+    const handleDelete = () => async () => {
+        const { error } = await supabase.from('chores_type').delete().eq("id", type.id);
+    
+        if (error) {
+            console.error(error);
+        }else{
+            mutate(() => supabase.from('chores_type').delete().eq("id", type.id))
+            setSnackbarState(true);
+        }
+    }
+    const handleEditClose = () => () => {
+        reset()
+        setEditState(false)
+    }
+
+    return (
+        <>
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <Snackbar
+                open={snackbarState}
+                autoHideDuration={2000}
+                onClose={handleSnackbarClose}
+                message="更新しました"
+            />
+            <Stack direction="row" justifyContent="space-between" alignItems={!editState ? "center": "end"} spacing={1} sx={{position: "relative"}}>
+                {
+                    !editState ? 
+                        // 通常時：テキストのみ表示
+                        <Stack direction="column">
+                            <Typography variant='body1'>{type.title}</Typography>
+                            <Typography variant='body2'>{type.point}P</Typography>
+                            <Typography variant='body2'>{type.description}</Typography>
+                        </Stack>
+                        :
+                        // 編集時：テキストフィールドで編集可能に
+                        <Stack direction="column" spacing={.5}>
+                            <TextField
+                                defaultValue={type.title}
+                                {...register(`title`, { required: true })}
+                                sx={Mui_TextField_defaultStyle}
+                            />
+                            {errors.title && <Typography color='error' variant='body2'>タイトルを入力してください</Typography>}
+                            
+                            <TextField
+                                defaultValue={type.point}
+                                {...register(`point`, { required: true })}
+                                slotProps={{input: {endAdornment: <InputAdornment position="end">P</InputAdornment>}}}
+                                sx={Mui_TextField_defaultStyle}
+                            />
+                            {errors.point && <Typography color='error' variant='body2'>ポイントを入力してください</Typography>}
+                            <TextField
+                                defaultValue={type.description ?? ''}
+                                placeholder='説明文を入力してください'
+                                {...register(`description`)}
+                                sx={Mui_TextField_defaultStyle}
+                            />
+                        </Stack>
+                }
+                <Stack direction="column" spacing={1} justifyContent="space-between">
+                {
+                    !editState ? 
+                        <Button variant='contained' size="small" onClick={() => setEditState(true)}>編集</Button>
+                        :
+                        <Stack spacing={2} justifyContent="flex-end">
+                            <CloseIcon onClick={handleEditClose()} sx={choresListEdit_closeIcon} />
+                            <Button variant='outlined' type='submit' disabled={!isDirty} sx={Mui_Button_defaultStyle}>更新</Button>
+                            <Button variant='outlined' color='error' sx={Mui_Button_defaultStyle}
+                                onClick={handleDelete()}>削除</Button>
+                        </Stack>
+                }
+                </Stack>
+            </Stack>
+        </form>
+        </>
+    )
+}
+
+const ChoresEditList = memo(() => {
     const {data: chores_type} = useQuery(
         supabase
             .from("chores_type")
@@ -107,78 +202,47 @@ const ChoresEditForm = memo(() => {
 
     return (
         <>
-            
             {
-            <form onSubmit={handleSubmit(onSubmit)}>
                 <Box marginBottom={2}>
                     {
                         chores_type?.map((type, i) => (
-                            <Box sx={{
-                                padding: "8px 22px",
-                                margin: "0 -22px",
-                                backgroundColor: i % 2 == 0 ? "#f5f5f5": "#fff",
-                                borderTop: "1px solid #eee",
-                                borderBottom: "1px solid #eee"
-                            }}>
-                            <Stack flexDirection="row" alignItems="center" justifyContent="space-between" marginBottom={1} key={type.id}>
-                                <TextField
-                                    defaultValue={type.title}
-                                    size="small"
-                                    {...register(`${type.id}.title`, { required: true })}
-                                    sx={{width: "65%", backgroundColor: "#fff"}}
-                                />
-                                <TextField
-                                    defaultValue={type.point}
-                                    size="small"
-                                    {...register(`${type.id}.point`, { required: true })}
-                                    slotProps={{
-                                        input: {
-                                            endAdornment: <InputAdornment position="end">P</InputAdornment>,
-                                        },
-                                    }}
-                                    sx={{width: "33%", backgroundColor: "#fff"}}
-                                />
-                            </Stack>
-                            <TextField
-                                defaultValue={type.description ?? ''}
-                                placeholder='説明文を入れてください'
-                                size="small"
-                                {...register(`${type.id}.description`)}
-                                sx={{width: "100%", backgroundColor: "#fff"}}
-                            />
+                            <Box 
+                                sx={{
+                                    padding: "8px 22px",
+                                    margin: "0 -22px",
+                                    backgroundColor: i % 2 == 0 ? "#f5f5f5": "#fff",
+                                    borderTop: "1px solid #eee",
+                                    borderBottom: "1px solid #eee"
+                                }}
+                                key={type.id}
+                            >
+                                <ChoresEditListItem type={type} />
                             </Box>
                         ))
                     }
-                
-                    {errors[0]?.title && <span>This field is required</span>}
                 </Box>
-                <Box textAlign={'center'}>
-                    <Button variant='contained'>編集</Button>
-                </Box>
-            </form>
             }
         </>
     )
 })
 
-const ChoresRegistionModal = () => {
-    const [open, setOpen] = useState(true);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-
+const ChoresRegistionModal = ({
+    modalOpen,
+    setModalOpen
+}:{
+    modalOpen: boolean,
+    setModalOpen: Dispatch<React.SetStateAction<boolean>>
+}) => {
     const [tabValue, setTabValue] = useState('modal-tab1');
     const handleTabChange = (_e: React.SyntheticEvent, newValue: string) => {
         setTabValue(newValue);
-      };
+    };
 
     return (
       <>
-        <Button variant='contained' color="warning" onClick={handleOpen} startIcon={<SettingsIcon />}>
-            お手伝いの種類を管理する
-        </Button>
         <Modal
-            open={open}
-            onClose={handleClose}
+            open={modalOpen}
+            onClose={() => setModalOpen(false)}
             sx={{top: "10vh", height: "80vh"}}
         >
             <Box sx={modalStyle}>
@@ -189,18 +253,16 @@ const ChoresRegistionModal = () => {
                     </TabList>
                     
                     <TabPanel value="modal-tab1" style={{overflow:'scroll'}}>
-                        <Typography variant="subtitle1" fontWeight={600} sx={{ paddingBottom: 1, borderBottom: 2, borderColor: 'primary.main' }} marginBottom={2}>
+                        <Typography variant="subtitle1" sx={choresTypeEdit_header}>
                             お手伝い項目を新規作成する
                         </Typography>
-                        
                         <ChoresRegistrationForm />
                     </TabPanel>
                     <TabPanel value="modal-tab2" style={{height: "100%", overflow:'scroll'}}>
-                        <Typography variant="subtitle1" fontWeight={600} sx={{ paddingBottom: 1, borderBottom: 2, borderColor: 'primary.main' }} marginBottom={2}>
+                        <Typography variant="subtitle1" sx={choresTypeEdit_header}>
                             既存のお手伝い項目を編集する
                         </Typography>
-                        
-                        <ChoresEditForm />
+                        <ChoresEditList />
                     </TabPanel>
                 </TabContext>
             </Box>
