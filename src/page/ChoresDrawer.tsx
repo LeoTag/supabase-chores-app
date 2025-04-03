@@ -5,26 +5,23 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardActionArea from '@mui/material/CardActionArea'
 import { Button, Checkbox, Divider, Drawer, Typography } from '@mui/material'
-import { useState } from 'react'
+import { Dispatch, memo, useState } from 'react'
 import fetchChoresType from '../api/fetchChoresType'
-import { buttonStyle } from '../assets/styles';
 import { KidProps } from '../config/types'
-import putSnackbar from '../component/SnackBar'
-import ChoresRegistionModal from './ChoresRegistionForm'
-import SettingsIcon from '@mui/icons-material/Settings';
 
-const ChoresSheetDrawer = ({
+const ChoresSheetDrawer = memo(({
     setAddChoresHistory,
-    selectedKid
+    selectedKid,
+    drawerOpen,
+    setDrawerOpen
 }: {
     setAddChoresHistory: (choresId: number[], resetChecked: () => void) => () => void;
     selectedKid: KidProps;
+    drawerOpen: boolean;
+    setDrawerOpen: Dispatch<React.SetStateAction<boolean>>;
 }
 ) => {
     const { data: chores_type } = useQuery(fetchChoresType(), { revalidateOnFocus: false, revalidateOnReconnect: false });
-    const [modalOpen, setModalOpen] = useState(false);
-
-    const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
     const [snackbar, setSnackbar] = useState<boolean>(false);
     const toggleDrawer = (newOpen: boolean) => () => {
         setDrawerOpen(newOpen);
@@ -48,13 +45,19 @@ const ChoresSheetDrawer = ({
         setSnackbar(true)
     }
 
-    return (
-        <Box padding={2}>
-            <Button onClick={toggleDrawer(true)} variant='contained' sx={buttonStyle}>
-                お手伝いポイントを管理
-            </Button>
+    const drawerStyle = {
+        margin: "16px",
+        "> .MuiPaper-root": {
+            margin: "auto auto 100px",
+            width: "90%",
+            maxWidth: "500px",
+            borderRadius: "12px"
+        }
+    }
 
-            <Drawer open={drawerOpen} onClose={toggleDrawer(false)} anchor="right">
+    return (
+        <Box padding={0} sx={{background: "red"}}>
+            <Drawer open={drawerOpen} onClose={toggleDrawer(false)} anchor="bottom" sx={drawerStyle}>
                 <Box padding={2} sx={{textAlign: 'center'}}>
                     <Stack direction="row" justifyContent="space-evenly" alignItems="center">
                         <Stack>
@@ -68,11 +71,7 @@ const ChoresSheetDrawer = ({
                             <Typography variant='body2' color='textPrimary'>お手伝いポイント</Typography>
                         </Stack>
                     </Stack>
-                    <Box textAlign={'right'}>
-                        <Button variant='text' color="primary" onClick={() => setModalOpen(true)} startIcon={<SettingsIcon />}>
-                            項目設定
-                        </Button>
-                    </Box>
+
                     {
                         chores_type?.map(chores => 
                             <Card className="p-chores__card" key={chores.id}>
@@ -100,16 +99,10 @@ const ChoresSheetDrawer = ({
                     </Button>
                 </Box>
                 <Divider />
-                <Box padding={2} sx={{textAlign: 'center'}} width={'100%'}>
-                    <ChoresRegistionModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
-                </Box>
+                
             </Drawer>
-            {
-                // FIXME
-                putSnackbar("ポイントを追加しました", snackbar, setSnackbar)
-            }
       </Box>
     )
-}
+})
 
 export default ChoresSheetDrawer;

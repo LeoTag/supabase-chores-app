@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material"
+import { createTheme, styled, Tab } from "@mui/material"
 
 declare module '@mui/material/styles/createPalette' {
     interface PaletteOptions {    
@@ -42,7 +42,7 @@ export const muiThemeStyle = createTheme({
         },
     },
     shape: {
-        borderRadius: 50
+        borderRadius: 8
     },
     typography: {
         fontFamily: [
@@ -56,6 +56,19 @@ export const muiThemeStyle = createTheme({
     },
 })
 
+export const StyledTab = styled(Tab)({
+    color: "rgba(255,255,255,1)",
+    fontSize: "11px",
+    padding: "8px",
+    minHeight: "unset",
+    "&.Mui-selected": {
+        color: "white",
+    },
+    "&.Mui-disabled": {
+        color: "#eee",
+        background: "#aaa"
+    }
+});
 
 export const buttonStyle = {
     position: 'fixed',

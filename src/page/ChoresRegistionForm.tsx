@@ -241,28 +241,24 @@ const ChoresEditList = memo(() => {
     )
 
     return (
-        <>
+        <Box marginBottom={2}>
             {
-                <Box marginBottom={2}>
-                    {
-                        chores_type?.map((type, i) => (
-                            <Box 
-                                sx={{
-                                    padding: "8px 22px",
-                                    margin: "0 -22px",
-                                    backgroundColor: i % 2 == 0 ? "#f5f5f5": "#fff",
-                                    borderTop: "1px solid #eee",
-                                    borderBottom: "1px solid #eee"
-                                }}
-                                key={type.id}
-                            >
-                                <ChoresEditListItem type={type} />
-                            </Box>
-                        ))
-                    }
+            chores_type?.map((type, i) => (
+                <Box 
+                    sx={{
+                        padding: "8px 22px",
+                        margin: "0 -22px",
+                        backgroundColor: i % 2 == 0 ? "#f5f5f5": "#fff",
+                        borderTop: "1px solid #eee",
+                        borderBottom: "1px solid #eee"
+                    }}
+                    key={type.id}
+                >
+                    <ChoresEditListItem type={type} />
                 </Box>
+            ))
             }
-        </>
+        </Box>
     )
 })
 
@@ -292,13 +288,13 @@ const ChoresRegistionModal = ({
                         <Tab label="項目を編集" value="modal-tab2" />
                     </TabList>
                     
-                    <TabPanel value="modal-tab1" style={{overflow:'scroll'}}>
+                    <TabPanel value="modal-tab1">
                         <Typography variant="subtitle1" sx={choresTypeEdit_header}>
                             お手伝い項目を新規作成する
                         </Typography>
                         <ChoresRegistrationForm />
                     </TabPanel>
-                    <TabPanel value="modal-tab2" style={{height: "100%", overflow:'scroll'}}>
+                    <TabPanel value="modal-tab2" style={{height: "100%", overflowY:'scroll'}}>
                         <Typography variant="subtitle1" sx={choresTypeEdit_header}>
                             既存のお手伝い項目を編集する
                         </Typography>

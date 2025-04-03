@@ -111,9 +111,9 @@ const ChoresHistoryList = memo(({
             </List>
         }
         {
-            checked.length > 0 && <Stack direction="row" spacing={2} position={'fixed'} bottom={0} left={0} right={0} padding={1} sx={{ justifyContent: "center", alignItems: "center", backgroundColor: "white"}}>
+            checked.length > 0 && <Stack direction="row" spacing={2} position={'fixed'} bottom={100} left={0} right={0} padding={1} sx={{ justifyContent: "center", alignItems: "center", backgroundColor: "white"}}>
                 <Button onClick={handleResetChecked()} variant='outlined'>リセット</Button>
-                <Button onClick={handleDeleteItems()} variant='contained'>選択項目を削除</Button>
+                <Button onClick={handleDeleteItems()} variant='contained' color='error'>選択項目を削除</Button>
             </Stack>
         }
         </>
