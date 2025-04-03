@@ -22,7 +22,6 @@ const ChoresSheetDrawer = memo(({
 }
 ) => {
     const { data: chores_type } = useQuery(fetchChoresType(), { revalidateOnFocus: false, revalidateOnReconnect: false });
-    const [snackbar, setSnackbar] = useState<boolean>(false);
     const toggleDrawer = (newOpen: boolean) => () => {
         setDrawerOpen(newOpen);
     };
@@ -42,7 +41,6 @@ const ChoresSheetDrawer = memo(({
     const resetChecked = () => {
         setChecked([]);
         setDrawerOpen(false);
-        setSnackbar(true)
     }
 
     const drawerStyle = {
