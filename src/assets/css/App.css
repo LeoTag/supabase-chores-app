@@ -1,11 +1,19 @@
+body{
 
+}
+#root{
+    margin: auto;
+    max-width: 680px;
+    position: relative;
+    height: calc(100dvh - 16px);
+}
 
 .p-chores-sheet__toggle-btn{
     background: #000;
 }
 
 .p-chores__card{
-    border-left: 4px solid #1976d2;
+    border-left: 4px solid #65b2c6;
     margin-bottom: 8px;
     text-align: left;
 

@@ -21,7 +21,7 @@ export const KidProfile = memo(({
             <Stack width={110} height={110}><img src={`assets/images/${selectedKid.thumbnail}`} alt="" /></Stack>
             <Stack>
                 <Typography variant="h5" component="h1">{selectedKid.name}</Typography>
-                <Typography variant="subtitle2">{selectedKid.school_grade.grade}</Typography>
+                <Typography variant="subtitle1">{selectedKid.school_grade.grade}</Typography>
                 <Typography variant="body2">基本のお小遣い：{selectedKid.school_grade.point.toLocaleString()}円</Typography>
                 <Typography variant="body2">お手伝いポイント：{totalPoint.toLocaleString()}P</Typography>
             </Stack>
@@ -87,10 +87,7 @@ const ChoresHistoryList = memo(({
             ? <Typography variant='body1' textAlign={'center'} marginTop={5}>履歴はありません</Typography>
             : <List sx={{ width: '100%', bgcolor: 'background.paper', marginBottom: "40px" }}>
                 {
-                chores_history?.map((history) => {
-                    const labelId = `checkbox-list-label-${history.id}`;
-
-                    return (
+                chores_history?.map((history) => (
                     <ListItem key={history.id} disablePadding
                         secondaryAction={
                             <Typography variant="body2" color="text.secondary">
@@ -106,17 +103,17 @@ const ChoresHistoryList = memo(({
                                 disableRipple
                                 sx={{ padding: 0, paddingRight: 1 }}
                             />
-                            <ListItemText id={labelId} primary={history.chores_type.title} />
+                            <ListItemText id={`checkbox-list-label-${history.id}`} primary={history.chores_type.title} />
                         </ListItemButton>
                     </ListItem>
-                    );
-                })}
+                ))
+                }
             </List>
         }
         {
             checked.length > 0 && <Stack direction="row" spacing={2} position={'fixed'} bottom={0} left={0} right={0} padding={1} sx={{ justifyContent: "center", alignItems: "center", backgroundColor: "white"}}>
-                <Button onClick={handleResetChecked()} variant='outlined' color="primary">リセット</Button>
-                <Button onClick={handleDeleteItems()} variant='contained' color="error">選択項目を削除</Button>
+                <Button onClick={handleResetChecked()} variant='outlined'>リセット</Button>
+                <Button onClick={handleDeleteItems()} variant='contained'>選択項目を削除</Button>
             </Stack>
         }
         </>
@@ -145,14 +142,14 @@ const TabPanelContent = memo(({
     return (
         <TabPanel value={selectedKid.id} key={selectedKid.id} sx={{padding: 2}}>
             <KidProfile selectedKid={selectedKid} totalPoint={totalPoint} />
+
             <Box>
                 <Stack direction="row" justifyContent={'space-between'} alignItems={'center'}>
                     <IconButton color="primary" aria-label="前の月へ" onClick={() => setSelectedPeriod(prevMonth)}>
                         <ArrowLeft />
                     </IconButton>
-                    <Typography variant='body1'>{selectedPeriod.getMonth() + 1}月のお手伝い履歴（{historyCount}回）</Typography>
+                    <Typography variant='h6'>{selectedPeriod.getMonth() + 1}月のお手伝い履歴（{historyCount}回）</Typography>
                     {
-                         
                         <IconButton 
                             color="primary" 
                             aria-label="次の月へ" 

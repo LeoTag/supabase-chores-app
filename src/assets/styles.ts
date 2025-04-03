@@ -1,17 +1,61 @@
 import { createTheme } from "@mui/material"
 
-export const muiThemeStyle = createTheme({
-    typography: {
-      fontFamily: [
-        "Noto Sans JP",
-        'Nunito',
-        'Roboto',
-        '"Helvetica Neue"',
-        'Arial',
-        'sans-serif'
-      ].join(','),
+declare module '@mui/material/styles/createPalette' {
+    interface PaletteOptions {    
+        white?: PaletteColorOptions;
+        accent?: PaletteColorOptions;
     }
+}
+
+declare module '@mui/material/Button' {
+    interface ButtonPropsColorOverrides {
+        white: true;
+        accent: true;
+    }
+}
+
+export const muiThemeStyle = createTheme({
+    palette: {
+        mode: 'light',
+        primary: {
+            main: '#65b2c6',
+            light: '#98e4f9',
+            dark: '#308295',
+            contrastText: '#fff',
+        },
+        secondary: {
+            main: '#d87274',
+            light: '#ffa2a3',
+            dark: '#a34449',
+            contrastText: '#fff',
+        },
+        accent:{
+            main: '#5F3E3A',
+            light: '#8d6964',
+            dark: '#341714'
+        },
+        white:{
+            main: '#fff',
+            light: '#fff',
+            dark: '#fff',
+            contrastText: '#fff',
+        },
+    },
+    shape: {
+        borderRadius: 50
+    },
+    typography: {
+        fontFamily: [
+            "Noto Sans JP",
+            'Nunito',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif'
+        ].join(','),
+    },
 })
+
 
 export const buttonStyle = {
     position: 'fixed',
@@ -68,3 +112,4 @@ export const Mui_Button_defaultStyle = {
     padding: "2px 8px",
     fontSize: "13px"
 }
+
