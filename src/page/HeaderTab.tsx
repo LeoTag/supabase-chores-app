@@ -17,7 +17,7 @@ const HeaderTab = ({
     const kidsOver3 = kids && kids.length > 3
 
     return (
-        <Paper color='accent' sx={{position: "sticky", margin: 1, width: "calc(100% - 16px)", borderRadius: "8px", overflow: "hidden", top: 0}}>
+        <Paper color='accent' sx={{position: "sticky", zIndex: "1200", margin: 1, width: "calc(100% - 16px)", borderRadius: "8px", overflow: "hidden", top: 0}}>
             <Tabs
                 value={tabValue}
                 onChange={(_e: React.SyntheticEvent, newValue: number) => {setTabValue(newValue)}}

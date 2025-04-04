@@ -9,7 +9,7 @@ import { mutate } from "swr";
 import { supabase } from '../config/supabase'
 import { KidProps } from '../config/types'
 import ChoresRegistionModal from './ChoresRegistionForm'
-import { StyledTab } from '../assets/styles'
+import { bottomNavStyle, StyledTab } from '../assets/styles'
 
 const BottomNav = ({
     kids,
@@ -72,7 +72,7 @@ const BottomNav = ({
             <ChoresRegistionModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
         </Box>
         
-        <AppBar elevation={3} sx={{ zIndex: 2000, position: "absolute", top: "auto", bottom: "0px", left: "8px", width: "calc(100% - 16px)", borderRadius: "8px" }}>
+        <AppBar elevation={3} sx={bottomNavStyle}>
             <Tabs
                 value={bottomNav}
                 variant="fullWidth"

@@ -101,6 +101,7 @@ export const modalStyle = {
     bottom: '0',
     transform: 'translate(-50%, -50%)',
     width: "90%",
+    maxWidth: "500px",
     height: "80dvh",
     overflow: "hidden",
     bgcolor: 'background.paper',
@@ -109,6 +110,19 @@ export const modalStyle = {
     paddingBottom: 6,
     paddingTop: 0,
 };
+
+export const bottomNavStyle = {
+    zIndex: 2000, 
+    position: "fixed", 
+    top: "auto", 
+    bottom: "8px", 
+    left: "8px", 
+    right: "8px", 
+    width: "calc(100% - 16px)", 
+    maxWidth: "680px", 
+    margin: "auto",
+    borderRadius: "8px"
+}
 
 export const choresTypeEdit_header = {
     marginBottom: 2,
