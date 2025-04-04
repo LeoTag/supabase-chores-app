@@ -22,8 +22,8 @@ const HeaderTab = ({
                 value={tabValue}
                 onChange={(_e: React.SyntheticEvent, newValue: number) => {setTabValue(newValue)}}
                 sx={{borderWidth: 3}}
-                variant={kidsOver3 ? "scrollable" : "standard"}
-                centered={!kidsOver3}
+                // variant={kidsOver3 ? "scrollable" : "standard"}
+                centered={true}
             >
                 {
                     kids?.map((kid) => (
