@@ -293,7 +293,7 @@ const ChoresRegistionModal = ({
                         </Typography>
                         <ChoresRegistrationForm />
                     </TabPanel>
-                    <TabPanel value="modal-tab2" style={{height: "100%", overflowY:'scroll'}}>
+                    <TabPanel value="modal-tab2" style={{height: "100%", overflowY:'scroll'}} sx={{paddingBottom: 0}}>
                         <Typography variant="subtitle1" sx={choresTypeEdit_header}>
                             既存のお手伝い項目を編集する
                         </Typography>

@@ -80,7 +80,7 @@ const App = () => {
                 </TabPanel>
             </TabContext>
 
-            <BottomNav selectedKid={selectedKid} />
+            <BottomNav kids={kids} selectedKid={selectedKid} setSelectedKid={setSelectedKid} />
         </ThemeProvider>
     )
 }

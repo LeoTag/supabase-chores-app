@@ -4,20 +4,25 @@ import { useQuery } from "@supabase-cache-helpers/postgrest-swr";
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardActionArea from '@mui/material/CardActionArea'
-import { Button, Checkbox, Divider, Drawer, Typography } from '@mui/material'
+import { Button, Checkbox, Divider, Drawer, IconButton, Typography } from '@mui/material'
 import { Dispatch, memo, useState } from 'react'
 import fetchChoresType from '../api/fetchChoresType'
 import { KidProps } from '../config/types'
 import { drawerStyle } from '../assets/styles'
+import { ArrowLeft, ArrowRight } from '@mui/icons-material'
 
 const ChoresSheetDrawer = memo(({
     setAddChoresHistory,
+    kids,
     selectedKid,
+    setSelectedKid,
     drawerOpen,
     setDrawerOpen
 }: {
     setAddChoresHistory: (choresId: number[], resetChecked: () => void) => () => void;
+    kids: KidProps[] | null | undefined
     selectedKid: KidProps;
+    setSelectedKid: Dispatch<React.SetStateAction<KidProps>>
     drawerOpen: boolean;
     setDrawerOpen: Dispatch<React.SetStateAction<boolean>>;
 }
@@ -44,11 +49,29 @@ const ChoresSheetDrawer = memo(({
         setDrawerOpen(false);
     }
 
+    const changeKid = (value: string) => () => {
+        if(!kids) return
+        const current = kids?.indexOf(selectedKid)
+        
+        if (value === "prev") {
+            const prev = current === 0 ? kids?.length - 1 : current! - 1;
+            setSelectedKid(kids[prev]);
+        }else if (value === "next") {
+            const next = current === kids?.length - 1 ? 0 : current! + 1;
+            setSelectedKid(kids[next]);
+        }
+    }
+
     return (
         <Box padding={0}>
             <Drawer open={drawerOpen} onClose={toggleDrawer(false)} anchor="bottom" sx={drawerStyle}>
                 <Box padding={2} sx={{textAlign: 'center'}}>
                     <Stack direction="row" justifyContent="space-evenly" alignItems="center" marginBottom={2}>
+                        <Stack>
+                            <IconButton color="primary" onClick={changeKid("prev")}>
+                                <ArrowLeft />
+                            </IconButton>
+                        </Stack>
                         <Stack>
                             <img src={`assets/images/${selectedKid.thumbnail}`} width={70} alt="" />
                         </Stack>
@@ -58,6 +81,11 @@ const ChoresSheetDrawer = memo(({
                                 <Typography variant='body2' color='textPrimary' sx={{display: "inline"}}>への</Typography>
                             </Typography>
                             <Typography variant='body2' color='textPrimary'>お手伝いポイント</Typography>
+                        </Stack>
+                        <Stack>
+                            <IconButton color="primary" onClick={changeKid("next")}>
+                                <ArrowRight />
+                            </IconButton>
                         </Stack>
                     </Stack>
 

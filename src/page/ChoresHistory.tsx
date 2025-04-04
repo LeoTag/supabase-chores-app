@@ -17,7 +17,7 @@ export const KidProfile = memo(({
     totalPoint: number
 }) => {
     return (
-        <Stack direction="row" spacing={2} sx={{ alignItems: 'center'}} marginBottom={1} padding={2} paddingTop={1} className="p-chores__kids">
+        <Stack direction="row" justifyContent="space-evenly" spacing={2} sx={{ alignItems: 'center'}} marginBottom={1} padding={2} paddingTop={1} className="p-chores__kids">
             <Stack width={110} height={110}><img src={`assets/images/${selectedKid.thumbnail}`} alt="" /></Stack>
             <Stack>
                 <Typography variant="h5" component="h1">{selectedKid.name}</Typography>

@@ -2,7 +2,7 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import { AppBar, Box, Tabs } from '@mui/material'
-import { useState } from 'react'
+import { Dispatch, useState } from 'react'
 import fetchChoresHistory from '../api/fetchChoresHistory'
 import ChoresSheetDrawer from './ChoresDrawer';
 import { mutate } from "swr";
@@ -12,9 +12,13 @@ import ChoresRegistionModal from './ChoresRegistionForm'
 import { StyledTab } from '../assets/styles'
 
 const BottomNav = ({
-    selectedKid
+    kids,
+    selectedKid,
+    setSelectedKid
 }: {
+    kids: KidProps[] | null | undefined
     selectedKid: KidProps
+    setSelectedKid: Dispatch<React.SetStateAction<KidProps>>
 }) => {
     const [bottomNav, setBottomNav] = useState(0);
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
@@ -57,7 +61,9 @@ const BottomNav = ({
         <>
         <ChoresSheetDrawer 
             setAddChoresHistory={setAddChoresHistory} 
+            kids={kids}
             selectedKid={selectedKid}
+            setSelectedKid={setSelectedKid}
             drawerOpen={drawerOpen} 
             setDrawerOpen={setDrawerOpen}
          />

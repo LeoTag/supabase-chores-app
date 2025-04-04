@@ -14,28 +14,27 @@ const HeaderTab = ({
     tabValue: number,
     setTabValue: Dispatch<React.SetStateAction<number>>
 }) => {
-    const kidsOver3 = kids && kids.length > 3 ? true : false
+    const kidsOver3 = kids && kids.length > 3
 
     return (
         <Paper color='accent' sx={{position: "sticky", margin: 1, width: "calc(100% - 16px)", borderRadius: "8px", overflow: "hidden", top: 0}}>
             <Tabs
                 value={tabValue}
                 onChange={(_e: React.SyntheticEvent, newValue: number) => {setTabValue(newValue)}}
-                textColor="inherit"
-                variant="fullWidth"
                 sx={{borderWidth: 3}}
+                variant={kidsOver3 ? "scrollable" : "standard"}
+                centered={!kidsOver3}
             >
                 {
-                    
                     kids?.map((kid) => (
-                             <Tab
-                                label={kid.name}
-                                icon={<img src={`assets/images/${kid.thumbnail}`} width={40} alt="" />}
-                                iconPosition={kidsOver3 ? 'top': 'start'}
-                                value={kid.id}
-                                key={kid.id}
-                                sx={{padding:1}}
-                                onClick={() => setSelectedKid(kid)}  />
+                        <Tab
+                            label={kid.name}
+                            icon={<img src={`assets/images/${kid.thumbnail}`} width={40} alt="" />}
+                            iconPosition={kidsOver3 ? 'top': 'start'}
+                            value={kid.id}
+                            key={kid.id}
+                            sx={{padding:1}}
+                            onClick={() => setSelectedKid(kid)}  />
                     ))
                 }
             </Tabs>
