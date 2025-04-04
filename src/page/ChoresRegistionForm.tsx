@@ -279,7 +279,6 @@ const ChoresRegistionModal = ({
         <Modal
             open={modalOpen}
             onClose={() => setModalOpen(false)}
-            sx={{top: "10vh", height: "80vh"}}
         >
             <Box sx={modalStyle}>
                 <TabContext value={tabValue}>

@@ -56,6 +56,19 @@ export const muiThemeStyle = createTheme({
     },
 })
 
+
+export const drawerStyle = {
+    margin: "16px",
+    "> .MuiPaper-root": {
+        margin: "auto auto 100px",
+        width: "90%",
+        maxWidth: "500px",
+        maxHeight: "80dvh",
+        overflowY: "auto",
+        borderRadius: "12px"
+    }
+}
+
 export const StyledTab = styled(Tab)({
     color: "rgba(255,255,255,1)",
     fontSize: "11px",
@@ -83,15 +96,14 @@ export const buttonStyle = {
 
 export const modalStyle = {
     position: 'absolute',
-    top: '50%',
+    top: 'calc(50% - 25px)',
     left: '50%',
     bottom: '0',
     transform: 'translate(-50%, -50%)',
     width: "90%",
-    height: "100%",
+    height: "80dvh",
     overflow: "hidden",
     bgcolor: 'background.paper',
-    border: '2px solid #000',
     borderRadius: 1.5,
     boxShadow: 24,
     paddingBottom: 6,

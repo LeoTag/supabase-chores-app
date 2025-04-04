@@ -8,6 +8,7 @@ import { Button, Checkbox, Divider, Drawer, Typography } from '@mui/material'
 import { Dispatch, memo, useState } from 'react'
 import fetchChoresType from '../api/fetchChoresType'
 import { KidProps } from '../config/types'
+import { drawerStyle } from '../assets/styles'
 
 const ChoresSheetDrawer = memo(({
     setAddChoresHistory,
@@ -43,21 +44,11 @@ const ChoresSheetDrawer = memo(({
         setDrawerOpen(false);
     }
 
-    const drawerStyle = {
-        margin: "16px",
-        "> .MuiPaper-root": {
-            margin: "auto auto 100px",
-            width: "90%",
-            maxWidth: "500px",
-            borderRadius: "12px"
-        }
-    }
-
     return (
-        <Box padding={0} sx={{background: "red"}}>
+        <Box padding={0}>
             <Drawer open={drawerOpen} onClose={toggleDrawer(false)} anchor="bottom" sx={drawerStyle}>
                 <Box padding={2} sx={{textAlign: 'center'}}>
-                    <Stack direction="row" justifyContent="space-evenly" alignItems="center">
+                    <Stack direction="row" justifyContent="space-evenly" alignItems="center" marginBottom={2}>
                         <Stack>
                             <img src={`assets/images/${selectedKid.thumbnail}`} width={70} alt="" />
                         </Stack>

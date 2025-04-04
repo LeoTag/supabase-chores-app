@@ -2,7 +2,7 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import { AppBar, Box, Tabs } from '@mui/material'
-import { useState } from 'react'
+import { Dispatch, useState } from 'react'
 import fetchChoresHistory from '../api/fetchChoresHistory'
 import ChoresSheetDrawer from './ChoresDrawer';
 import { mutate } from "swr";
@@ -10,6 +10,7 @@ import { supabase } from '../config/supabase'
 import { KidProps } from '../config/types'
 import ChoresRegistionModal from './ChoresRegistionForm'
 import { StyledTab } from '../assets/styles'
+import { set } from 'react-hook-form'
 
 const BottomNav = ({
     selectedKid
@@ -44,6 +45,15 @@ const BottomNav = ({
         }
     };
 
+    const handleToggleModal = () => () => {
+        setDrawerOpen(false)
+        setModalOpen(!modalOpen);
+    }
+    const handleToggleDrawer = () => () => {
+        setModalOpen(false)
+        setDrawerOpen(!drawerOpen);
+    }
+
     return (
         <>
         <ChoresSheetDrawer 
@@ -63,8 +73,8 @@ const BottomNav = ({
                 variant="fullWidth"
                 onChange={(_e, newValue) => {setBottomNav(newValue)}}
             >
-                <StyledTab label="お手伝い設定" icon={<PlaylistAddCheckIcon />} onClick={() => setModalOpen(modalOpen ? false: true)} />
-                <StyledTab label="ポイントをあげる" icon={<AutoAwesomeIcon />} onClick={() => setDrawerOpen(drawerOpen ? false: true)} />
+                <StyledTab label="お手伝い設定" icon={<PlaylistAddCheckIcon />} onClick={handleToggleModal()} />
+                <StyledTab label="ポイントをあげる" icon={<AutoAwesomeIcon />} onClick={handleToggleDrawer()} />
                 <StyledTab label="キッズ管理" icon={<ManageAccountsIcon />} disabled />
             </Tabs>
         </AppBar>
