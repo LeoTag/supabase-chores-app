@@ -1,4 +1,3 @@
-import { Padding } from "@mui/icons-material"
 import { createTheme, styled, Tab } from "@mui/material"
 
 declare module '@mui/material/styles/createPalette' {
