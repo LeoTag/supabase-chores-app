@@ -4,7 +4,7 @@ import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import { AppBar, Box, Tabs } from '@mui/material'
 import { Dispatch, useState } from 'react'
 import fetchChoresHistory from '../api/fetchChoresHistory'
-import ChoresSheetDrawer from './ChoresDrawer';
+import ChoresSheetDialog from './ChoresDialog';
 import { mutate } from "swr";
 import { supabase } from '../config/supabase'
 import { KidProps } from '../config/types'
@@ -21,7 +21,7 @@ const BottomNav = ({
     setSelectedKid: Dispatch<React.SetStateAction<KidProps>>
 }) => {
     const [bottomNav, setBottomNav] = useState(0);
-    const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const [modalOpen, setModalOpen] = useState(false);
 
     /**
@@ -49,23 +49,23 @@ const BottomNav = ({
     };
 
     const handleToggleModal = () => () => {
-        setDrawerOpen(false)
+        setDialogOpen(false)
         setModalOpen(!modalOpen);
     }
-    const handleToggleDrawer = () => () => {
+    const handleToggleDialog = () => () => {
         setModalOpen(false)
-        setDrawerOpen(!drawerOpen);
+        setDialogOpen(!dialogOpen);
     }
 
     return (
         <>
-        <ChoresSheetDrawer 
+        <ChoresSheetDialog 
             setAddChoresHistory={setAddChoresHistory} 
             kids={kids}
             selectedKid={selectedKid}
             setSelectedKid={setSelectedKid}
-            drawerOpen={drawerOpen} 
-            setDrawerOpen={setDrawerOpen}
+            dialogOpen={dialogOpen} 
+            setDialogOpen={setDialogOpen}
          />
 
         <Box padding={2} sx={{textAlign: 'center'}} width={'100%'}>
@@ -79,7 +79,7 @@ const BottomNav = ({
                 onChange={(_e, newValue) => {setBottomNav(newValue)}}
             >
                 <StyledTab label="お手伝い設定" icon={<PlaylistAddCheckIcon />} onClick={handleToggleModal()} />
-                <StyledTab label="ポイントをあげる" icon={<AutoAwesomeIcon />} onClick={handleToggleDrawer()} />
+                <StyledTab label="ポイントをあげる" icon={<AutoAwesomeIcon />} onClick={handleToggleDialog()} />
                 <StyledTab label="キッズ管理" icon={<ManageAccountsIcon />} disabled />
             </Tabs>
         </AppBar>

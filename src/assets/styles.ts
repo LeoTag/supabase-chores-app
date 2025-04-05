@@ -57,16 +57,27 @@ export const muiThemeStyle = createTheme({
 })
 
 
-export const drawerStyle = {
-    margin: "16px",
+export const dialogStyle = {
+    margin: "auto auto 25px",
+    width: "90%",
+    maxWidth: "500px",
+    maxHeight: "90dvh",
+    display: "block !important",
+    ".MuiDialog-container": {
+        display: "block !important",
+    },
     "> .MuiPaper-root": {
-        margin: "auto auto 100px",
-        width: "90%",
-        maxWidth: "500px",
-        maxHeight: "80dvh",
-        overflowY: "auto",
-        borderRadius: "12px"
-    }
+        margin: "auto",
+    },
+    '.MuiDialogTitle-root': {
+        padding: "16px 8px",
+    },
+    '& .MuiDialogContent-root': {
+        padding: 2,
+    },
+    '& .MuiDialogActions-root': {
+        padding: 1,
+    },
 }
 
 export const StyledTab = styled(Tab)({
