@@ -1,3 +1,4 @@
+import { Padding } from "@mui/icons-material"
 import { createTheme, styled, Tab } from "@mui/material"
 
 declare module '@mui/material/styles/createPalette' {
@@ -66,7 +67,7 @@ export const dialogStyle = {
     ".MuiDialog-container": {
         display: "block !important",
     },
-    "> .MuiPaper-root": {
+    ".MuiDialog-paper": {
         margin: "auto",
     },
     '.MuiDialogTitle-root': {

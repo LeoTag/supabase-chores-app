@@ -85,7 +85,7 @@ const ChoresHistoryList = memo(({
         {
             !count
             ? <Typography variant='body1' textAlign={'center'} marginTop={5}>履歴はありません</Typography>
-            : <List sx={{ width: '100%', bgcolor: 'background.paper', marginBottom: "40px" }}>
+            : <List sx={{ width: '100%', bgcolor: 'background.paper', marginBottom: "120px" }}>
                 {
                 chores_history?.map((history) => (
                     <ListItem key={history.id} disablePadding

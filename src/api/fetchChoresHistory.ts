@@ -21,7 +21,6 @@ const fetchChoresHistory = (kidId: number, startDate?: Date) => {
         .filter('created_at', 'gte', `${nowYear}-${nowMonthDigits}-01`)
         .filter('created_at', 'lt', `${nowYear}-${nextMonthDigits}-01`)
         .order("created_at", { ascending: false })
-        .order("id", { ascending: true });
 }
 
 export default fetchChoresHistory;
