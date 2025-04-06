@@ -263,11 +263,11 @@ const ChoresEditList = memo(() => {
 })
 
 const ChoresRegistionDialog = ({
-    modalOpen,
-    setModalOpen
+    choresSettingOpen,
+    setChoresSettingOpen
 }:{
-    modalOpen: boolean,
-    setModalOpen: Dispatch<React.SetStateAction<boolean>>
+    choresSettingOpen: boolean,
+    setChoresSettingOpen: Dispatch<React.SetStateAction<boolean>>
 }) => {
     const [tabValue, setTabValue] = useState('modal-tab1');
     const handleTabChange = (_e: React.SyntheticEvent, newValue: string) => {
@@ -277,8 +277,8 @@ const ChoresRegistionDialog = ({
     return (
       <>
         <Modal
-            open={modalOpen}
-            onClose={() => setModalOpen(false)}
+            open={choresSettingOpen}
+            onClose={() => setChoresSettingOpen(false)}
         >
             <Box sx={modalStyle}>
                 <TabContext value={tabValue}>

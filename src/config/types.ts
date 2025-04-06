@@ -1,8 +1,11 @@
 export type KidProps = {
     id: number,
     name: string,
-    thumbnail: String | null,
+    thumbnail?: String | null,
+    description?: String | null,
+    grade_id: number,
     school_grade: {
+        id: number,
         grade: string,
         point: number
     }

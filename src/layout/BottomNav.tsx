@@ -1,7 +1,7 @@
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
-import { AppBar, Box, Tabs } from '@mui/material'
+import { AppBar, Tabs } from '@mui/material'
 import { Dispatch, useState } from 'react'
 import fetchChoresHistory from '../api/fetchChoresHistory'
 import GiveChoresPointsDialog from '../page/GiveChoresPointsDialog';
@@ -10,6 +10,8 @@ import { supabase } from '../config/supabase'
 import { KidProps } from '../config/types'
 import ChoresRegistionDialog from '../page/ChoresRegistionDialog'
 import { bottomNavStyle, StyledTab } from '../assets/styles'
+import KidsManagementDialog from '../page/KidsManagement'
+import getSchoolGrade from '../api/schoolGrade'
 
 const BottomNav = ({
     kids,
@@ -21,9 +23,11 @@ const BottomNav = ({
     setSelectedKid: Dispatch<React.SetStateAction<KidProps>>
 }) => {
     const [bottomNav, setBottomNav] = useState(0);
-    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-    const [modalOpen, setModalOpen] = useState(false);
-
+    const [giveChoresPointOpen, setGiveChoresPointOpen] = useState<boolean>(false);
+    const [choresSettingOpen, setChoresSettingOpen] = useState(false);
+    const [kidsManagementOpen, setKidsManagementOpen] = useState(false);
+    const { data: school_grade } = getSchoolGrade()
+    
     /**
      * お手伝い履歴を追加
      * @param choresId お手伝いID
@@ -48,39 +52,45 @@ const BottomNav = ({
         }
     };
 
-    const handleToggleModal = () => () => {
-        setDialogOpen(false)
-        setModalOpen(!modalOpen);
+    const handleChoresSetting = () => () => {
+        setGiveChoresPointOpen(false)
+        setKidsManagementOpen(false)
+        setChoresSettingOpen(!choresSettingOpen);
     }
-    const handleToggleDialog = () => () => {
-        setModalOpen(false)
-        setDialogOpen(!dialogOpen);
+    const handleGiveChoresPointDialog = () => () => {
+        setChoresSettingOpen(false)
+        setKidsManagementOpen(false)
+        setGiveChoresPointOpen(!giveChoresPointOpen);
+    }
+
+    const handleKidsManagement = () => () => {
+        setChoresSettingOpen(false)
+        setGiveChoresPointOpen(false)
+        setKidsManagementOpen(!kidsManagementOpen);
     }
 
     return (
         <>
+        <ChoresRegistionDialog choresSettingOpen={choresSettingOpen} setChoresSettingOpen={setChoresSettingOpen} />
         <GiveChoresPointsDialog 
             setAddChoresHistory={setAddChoresHistory} 
             kids={kids}
             selectedKid={selectedKid}
             setSelectedKid={setSelectedKid}
-            dialogOpen={dialogOpen} 
-            setDialogOpen={setDialogOpen}
-         />
+            dialogOpen={giveChoresPointOpen} 
+            setDialogOpen={setGiveChoresPointOpen}
+        />
+        <KidsManagementDialog kids={kids} school_grade={school_grade} kidsManagementOpen={kidsManagementOpen} setKidsManagementOpen={setKidsManagementOpen} />
 
-        <Box padding={2} sx={{textAlign: 'center'}} width={'100%'}>
-            <ChoresRegistionDialog modalOpen={modalOpen} setModalOpen={setModalOpen} />
-        </Box>
-        
         <AppBar elevation={3} sx={bottomNavStyle}>
             <Tabs
                 value={bottomNav}
                 variant="fullWidth"
                 onChange={(_e, newValue) => {setBottomNav(newValue)}}
             >
-                <StyledTab label="お手伝い設定" icon={<PlaylistAddCheckIcon />} onClick={handleToggleModal()} />
-                <StyledTab label="ポイントをあげる" icon={<AutoAwesomeIcon />} onClick={handleToggleDialog()} />
-                <StyledTab label="キッズ管理" icon={<ManageAccountsIcon />} disabled />
+                <StyledTab label="お手伝い設定" icon={<PlaylistAddCheckIcon />} onClick={handleChoresSetting()} />
+                <StyledTab label="ポイントをあげる" icon={<AutoAwesomeIcon />} onClick={handleGiveChoresPointDialog()} />
+                <StyledTab label="キッズ管理" icon={<ManageAccountsIcon />} onClick={handleKidsManagement()} />
             </Tabs>
         </AppBar>
         </>
