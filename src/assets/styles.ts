@@ -80,6 +80,13 @@ export const dialogStyle = {
     },
 }
 
+export const kidsManagement_dialogStyle = {
+    ...dialogStyle,
+    ".MuiDialogContent-root": {
+        paddingTop: "0px",
+    },
+} 
+
 export const StyledTab = styled(Tab)({
     color: "rgba(255,255,255,1)",
     fontSize: "11px",

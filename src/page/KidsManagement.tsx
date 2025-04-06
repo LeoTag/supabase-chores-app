@@ -1,10 +1,14 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, Typography } from "@mui/material"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Snackbar, SnackbarCloseReason, Stack, TextField, Typography } from "@mui/material"
 import { memo, useState } from "react"
-import { dialogStyle } from "../assets/styles"
+import { kidsManagement_dialogStyle, Mui_TextField_defaultStyle } from "../assets/styles"
 import { KidProps } from "../config/types"
 import { ArrowLeft, ArrowRight } from "@mui/icons-material"
+// import { supabase } from "../config/supabase"
+import { SubmitHandler, useForm } from "react-hook-form"
+// import { mutate } from "swr"
+import React from "react"
 
-const SchoolGraderController = ({
+const SchoolGraderController = memo(({
     kid,
     gradeId,
     school_grade
@@ -14,67 +18,157 @@ const SchoolGraderController = ({
     school_grade: KidProps["school_grade"][] | null | undefined
 }) => {
     const [editMode, setEditMode] = useState(false);
-    const [grade, setGrade] = useState(school_grade?.find(e => e.id === gradeId));
+    const [tempGrade, setTempGrade] = useState(school_grade?.find(e => e?.id === gradeId));
     const [gradeNum, setGradeNum] = useState(gradeId);
+    const {register, getValues, setValue, handleSubmit, watch, formState: { errors }} = useForm<KidProps>({
+        defaultValues: kid
+    })
 
-    const handleGrade = (num: number) => () => {
-        const grade = school_grade?.find(e => e.id === num)
-        if(!grade) return;
-        setGradeNum(num);
-        setGrade(grade);
+    const onSubmit: SubmitHandler<KidProps> = async (data) => {
+        console.log("*********************submit*********************");
+        console.log(data);
+
+        // const { error } = await supabase.from('kids').upsert(data);
+        // console.log(watch("name"));
+        // console.log(watch("description"));
+        // console.log(watch("grade_id"));
+        
+        // if (error) {
+        //     console.error(error);
+        // }else{
+        //     mutate(() => supabase.from('kids').upsert(data))
+        //     setSnackbarState(true);
+        //     setEditMode(false)
+        // }
     }
+
+    console.log(kid);
+    
+    console.log(watch("name"));
+    console.log(watch("description"));
+
+    const handlePrevGrade = () => () => {
+        setValue(`grade_id`, gradeNum - 1)
+        setGradeNum(gradeNum - 1)
+        setTempGrade(school_grade?.find(e => e?.id === gradeNum - 1))
+    }
+    const handleNextGrade = () => () => {
+        setValue(`grade_id`, gradeNum + 1)
+        setGradeNum(gradeNum + 1)
+        setTempGrade(school_grade?.find(e => e?.id === gradeNum + 1))
+    }
+
+    const [snackbarState, setSnackbarState] = useState<boolean>(false);
+    const handleSnackbarClose = (_e: React.SyntheticEvent | Event, reason?: SnackbarCloseReason,) => {
+        if (reason === 'clickaway') return;
+        setSnackbarState(false);
+    };
     
     return (
-        <Stack direction="row" justifyContent="space-evenly" alignItems="center" spacing={2} paddingBottom={2} key={kid.id}>
-            <Stack flex={2} alignItems="end">
-                <img src={`assets/images/${kid.thumbnail}`} width={75} alt="" />
-            </Stack>
-            <Stack flex={3}>
-                <Typography variant="subtitle1">{kid.name}</Typography>
+        <>
+        <Box marginTop={2} marginBottom={2}>
+            <form onSubmit={handleSubmit(onSubmit)}>
+            <Stack direction="row" justifyContent="space-evenly" alignItems="center" spacing={2} paddingBottom={2} key={kid.id}>
+                <Stack flex={1.5} alignItems="end">
+                    {/* FIXME: 画像変更機能追加したい */}
+                    <img src={`assets/images/${kid.thumbnail}`} width={75} alt="" />
+                </Stack>
+                <Stack flex={3.5}>
                 {
                     !editMode 
-                    ? <Typography variant="body2" color="textPrimary">{grade?.grade}</Typography> 
+                    ? 
+                    <>
+                        <Typography variant="subtitle1">{getValues("name")}</Typography>
+                        <Typography variant="body2">{getValues("description")}</Typography>
+                        <Typography variant="body2" color="textPrimary">{tempGrade?.grade}</Typography> 
+                    </>
                     :
+                    <>
+                    <TextField
+                        defaultValue={kid.name ?? ''}
+                        placeholder='名前を入力してください'
+                        {...register(`name`, {required: true})}
+                        sx={Mui_TextField_defaultStyle}
+                    />
+                    <TextField
+                        defaultValue={kid.description ?? ''}
+                        placeholder='ひとこと'
+                        {...register(`description`)}
+                        sx={Mui_TextField_defaultStyle}
+                    />
                     <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={.5}>
                         <Stack>
-                            <IconButton color="primary" onClick={handleGrade(gradeNum - 1)} disabled={3 >= gradeNum}><ArrowLeft /></IconButton>
+                            {/* FIXME: 3 >= gradeNum */}
+                            <IconButton
+                                color="primary"
+                                disabled={3 >= gradeNum}
+                                onClick={handlePrevGrade()}
+                            >
+                                <ArrowLeft />
+                            </IconButton>
                         </Stack>
-                        <Typography variant="body2" whiteSpace="nowrap">{grade?.grade}</Typography>
+                        <Typography variant="body2" color="textPrimary">{tempGrade?.grade}</Typography> 
                         <Stack>
-                            {/* FIXME: 11 */}
-                            <IconButton color="primary" onClick={handleGrade(gradeNum + 1)} disabled={11 <= gradeNum}><ArrowRight /></IconButton>
+                            {/* FIXME: 11 <= gradeNum */}
+                            <IconButton
+                                color="primary"
+                                disabled={11 <= gradeNum}
+                                onClick={handleNextGrade()}
+                            >
+                                <ArrowRight />
+                            </IconButton>
                         </Stack>
                     </Stack>
+                    {errors.name && <Typography color='error' variant='body2'>名前を入力してください</Typography>}
+                    </>
                 }
-                
+                </Stack>
             </Stack>
-            <Stack direction="column" spacing={1}>
-                <Button
-                    variant={editMode ? "contained": "outlined"}
-                    color="primary"
-                    size="small"
-                    sx={{flex: 1, height: "100%"}}
-                    onClick={() => setEditMode(!editMode)}
-                >
-                    {editMode ? "保存" : "編集"}
-                </Button>
+            <Stack direction="row" justifyContent="center" spacing={2}>
                 {
-                    editMode && (
+                    editMode ? <>
                         <Button
                             variant="outlined"
                             color="error"
                             size="small"
-                            sx={{flex: 1, height: "100%"}}
-                            onClick={() => setEditMode(false)}
+                            sx={{flex: 1, height: "100%", maxWidth: "10em"}}
+                            onClick={() => {setEditMode(false)}}
+                        >キャンセル</Button>
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            size="small"
+                            type="submit"
+                            sx={{flex: 1, height: "100%", maxWidth: "10em"}}
+                            onClick={() => setEditMode(!editMode)}
                         >
-                            削除
+                            変更を保存する
                         </Button>
-                    )
+                    </>
+                    :
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        sx={{flex: 1, height: "100%", maxWidth: "10em"}}
+                        onClick={() => setEditMode(!editMode)}
+                    >
+                        編集
+                    </Button>
                 }
+                
             </Stack>
-        </Stack>
+            </form>
+        </Box>
+        <Snackbar
+            open={snackbarState}
+            autoHideDuration={2000}
+            onClose={handleSnackbarClose}
+            message="更新しました"
+        />
+        </>
     )
-}
+})
 
 const KidsManagementDialog = memo(({
     kids,
@@ -88,13 +182,12 @@ const KidsManagementDialog = memo(({
     setKidsManagementOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
     
-
     return (
         <Box padding={0}>
             <Dialog
-            open={kidsManagementOpen}
-            onClose={() => setKidsManagementOpen(false)}
-                sx={dialogStyle}
+                open={kidsManagementOpen}
+                onClose={() => setKidsManagementOpen(false)}
+                sx={kidsManagement_dialogStyle}
             >
                 <DialogTitle>
                     <Typography color='primary' align="center" fontWeight={500}>
@@ -104,14 +197,15 @@ const KidsManagementDialog = memo(({
 
                 <DialogContent dividers>
                 {
-                    kids?.map((kid) => (
+                    kids?.map((kid) => <React.Fragment key={kid.id}>
                         <SchoolGraderController
                             kid={kid}
                             gradeId={kid.grade_id}
                             school_grade={school_grade}
                             key={kid.id}
                         />
-                    ))
+                        <Divider sx={{margin: "0.5em 0"}} />
+                    </React.Fragment>)
                 }
                 </DialogContent>
 

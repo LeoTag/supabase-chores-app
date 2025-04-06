@@ -11,6 +11,12 @@ export type KidProps = {
     }
 }
 
+export type KidPropsWrite = {
+    id?: number,
+    thumbnail?: string | null | undefined,
+    school_grade?: KidProps["school_grade"]
+} & Omit<KidProps, "id" | "thumbnail" | "school_grade">
+
 export type ChoresHistoryProps = {
     selectedKid: KidProps;
     setTotalPoint: (point: number) => void;

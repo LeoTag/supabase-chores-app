@@ -42,6 +42,7 @@ const BottomNav = ({
             created_at: date
         }));
     
+        if(!insertData) return;
         const { error } = await supabase.from('chores_history').insert(insertData);
     
         if (error) {
@@ -90,7 +91,7 @@ const BottomNav = ({
             >
                 <StyledTab label="お手伝い設定" icon={<PlaylistAddCheckIcon />} onClick={handleChoresSetting()} />
                 <StyledTab label="ポイントをあげる" icon={<AutoAwesomeIcon />} onClick={handleGiveChoresPointDialog()} />
-                <StyledTab label="キッズ管理" icon={<ManageAccountsIcon />} onClick={handleKidsManagement()} />
+                <StyledTab label="キッズ管理" icon={<ManageAccountsIcon />} onClick={handleKidsManagement()} disabled={true} />
             </Tabs>
         </AppBar>
         </>

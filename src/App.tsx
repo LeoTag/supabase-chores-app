@@ -25,7 +25,7 @@ const App = () => {
         supabase
             .from("kids")
             .select(`
-                id, name, thumbnail, grade_id,
+                *,
                 school_grade(id, grade, point)
             `)
             .order("id"),

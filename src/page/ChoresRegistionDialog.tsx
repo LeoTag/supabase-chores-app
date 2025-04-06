@@ -198,7 +198,7 @@ const ChoresEditListItem = ({
                             <TextField
                                 defaultValue={type.point}
                                 type='number'
-                                {...register(`point`, { required: true })}
+                                {...register(`point`, { required: true, valueAsNumber: true })}
                                 slotProps={{input: {endAdornment: <InputAdornment position="end">P</InputAdornment>}}}
                                 sx={Mui_TextField_defaultStyle}
                             />
