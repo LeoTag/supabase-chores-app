@@ -262,7 +262,7 @@ const ChoresEditList = memo(() => {
     )
 })
 
-const ChoresRegistionModal = ({
+const ChoresRegistionDialog = ({
     modalOpen,
     setModalOpen
 }:{
@@ -306,4 +306,4 @@ const ChoresRegistionModal = ({
     );
 }
 
-export default ChoresRegistionModal
+export default ChoresRegistionDialog

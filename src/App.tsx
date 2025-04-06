@@ -9,8 +9,8 @@ import { muiThemeStyle } from './assets/styles'
 import TabPanelContent from './page/ChoresHistory'
 import { KidProps } from './config/types'
 
-import BottomNav from './page/BottomNav'
-import HeaderTab from './page/HeaderTab'
+import BottomNav from './layout/BottomNav'
+import HeaderTab from './layout/HeaderTab'
 
 
 const App = () => {

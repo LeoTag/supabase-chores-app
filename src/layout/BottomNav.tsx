@@ -4,11 +4,11 @@ import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import { AppBar, Box, Tabs } from '@mui/material'
 import { Dispatch, useState } from 'react'
 import fetchChoresHistory from '../api/fetchChoresHistory'
-import ChoresSheetDialog from './ChoresDialog';
+import GiveChoresPointsDialog from '../page/GiveChoresPointsDialog';
 import { mutate } from "swr";
 import { supabase } from '../config/supabase'
 import { KidProps } from '../config/types'
-import ChoresRegistionModal from './ChoresRegistionForm'
+import ChoresRegistionDialog from '../page/ChoresRegistionDialog'
 import { bottomNavStyle, StyledTab } from '../assets/styles'
 
 const BottomNav = ({
@@ -59,7 +59,7 @@ const BottomNav = ({
 
     return (
         <>
-        <ChoresSheetDialog 
+        <GiveChoresPointsDialog 
             setAddChoresHistory={setAddChoresHistory} 
             kids={kids}
             selectedKid={selectedKid}
@@ -69,7 +69,7 @@ const BottomNav = ({
          />
 
         <Box padding={2} sx={{textAlign: 'center'}} width={'100%'}>
-            <ChoresRegistionModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
+            <ChoresRegistionDialog modalOpen={modalOpen} setModalOpen={setModalOpen} />
         </Box>
         
         <AppBar elevation={3} sx={bottomNavStyle}>

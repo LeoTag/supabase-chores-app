@@ -38,38 +38,45 @@ const ChoresCheckedList = ({
     return (
         <Card className="p-chores__card" key={chores.id}>
             <Stack direction="row" sx={{justifyContent: "start", alignItems: "flex-start"}}>
-                <CardContent sx={{padding: "8px 8px 0 !important", width: "100%", justifyContent: "space-between"}}>
-                    <Stack direction="row" spacing={2} sx={{justifyContent: "space-between"}}>
-                        <h4 className="p-chores__card__title">{chores.title}</h4>
-                        <h4 className="p-chores__card__point"><strong>{chores.point}</strong>ポイント</h4>
+                <CardContent sx={{padding: "8px !important", width: "100%", justifyContent: "space-between"}}>
+                    <Stack direction="row" spacing={0.5} sx={{justifyContent: "space-between"}}>
+                        <Box>
+                            <Typography sx={{fontSize: "16px", fontWeight: 600}}>{chores.title}</Typography>
+                            <Typography sx={{display: "inline", fontSize: "16px", fontWeight: "bold", color: "#FF9632", paddingRight: "2px"}}>{chores.point}</Typography>
+                            <Typography sx={{display: "inline", fontSize: "12px"}}>ポイント</Typography>
+                            { chores.description && <Typography color='textSecondary' sx={{fontSize: "12px"}}>{chores.description}</Typography> }
+                        </Box>
+                        
+                        <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
+                            <IconButton 
+                                color="primary"
+                                disabled={counter === 0}
+                                onClick={handleRemove(chores.id)}
+                            >
+                                <RemoveCircleIcon />
+                            </IconButton>
+                            <Typography variant="body2" color="textPrimary">{counter}</Typography>
+                            <IconButton 
+                                color="primary" 
+                                disabled={counter === 5}
+                                onClick={handleAdd(chores.id)}
+                            >
+                                <AddCircleIcon />
+                            </IconButton>
+                        </Stack>
+                        
                     </Stack>
-                    <p className="p-chores__card__description">{chores.description}</p>
+                    
                 </CardContent>
             </Stack>
         
-            <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
-                <IconButton 
-                    color="primary"
-                    disabled={counter === 0}
-                    onClick={handleRemove(chores.id)}
-                >
-                    <RemoveCircleIcon />
-                </IconButton>
-                <Typography variant="body2" color="textPrimary">{counter}</Typography>
-                <IconButton 
-                    color="primary" 
-                    disabled={counter === 5}
-                    onClick={handleAdd(chores.id)}
-                >
-                    <AddCircleIcon />
-                </IconButton>
-            </Stack>
+            
         </Card>
     )
 }
 
 
-const ChoresSheetDialog = memo(({
+const GiveChoresPointsDialog = memo(({
     setAddChoresHistory,
     kids,
     selectedKid,
@@ -156,4 +163,4 @@ const ChoresSheetDialog = memo(({
     )
 })
 
-export default ChoresSheetDialog;
+export default GiveChoresPointsDialog;

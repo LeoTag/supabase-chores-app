@@ -16,35 +16,12 @@ body{
     border-left: 4px solid #65b2c6;
     margin-bottom: 8px;
     text-align: left;
+    
+    border-top-left-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
 
     &:last-of-type{
         margin-bottom: 16px;
-    }
-
-    .p-chores__card__title{
-        font-size: 18px;
-        font-weight: bold;
-    }
-
-    .p-chores__card__title{
-        display: inline-block;
-        font-size: 16px;
-    }
-    
-    .p-chores__card__point{
-        display: inline-block;
-        font-size: 12px;
-        strong{
-            font-size: 18px;
-            font-weight: bold;
-            color: #FF9632;
-            padding-right: 2px;
-        }
-    }
-    
-    .p-chores__card__description{
-        color: #999;
-        font-size: 12px;
     }
 }
 
