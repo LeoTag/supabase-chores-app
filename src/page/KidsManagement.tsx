@@ -1,51 +1,48 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Snackbar, SnackbarCloseReason, Stack, TextField, Typography } from "@mui/material"
-import { memo, useState } from "react"
+import { Dispatch, memo, useState } from "react"
 import { kidsManagement_dialogStyle, Mui_TextField_defaultStyle } from "../assets/styles"
-import { KidProps } from "../config/types"
+import { KidProps, KidPropsWrite } from "../config/types"
 import { ArrowLeft, ArrowRight } from "@mui/icons-material"
-// import { supabase } from "../config/supabase"
+import { supabase } from "../config/supabase"
 import { SubmitHandler, useForm } from "react-hook-form"
-// import { mutate } from "swr"
+import { mutate } from "swr"
 import React from "react"
 
 const SchoolGraderController = memo(({
     kid,
     gradeId,
-    school_grade
+    school_grade,
+    setSnackbarState
 }:{
     kid: KidProps,
     gradeId: KidProps["grade_id"],
-    school_grade: KidProps["school_grade"][] | null | undefined
+    school_grade: KidProps["school_grade"][] | null | undefined,
+    setSnackbarState: Dispatch<React.SetStateAction<boolean>>
 }) => {
     const [editMode, setEditMode] = useState(false);
     const [tempGrade, setTempGrade] = useState(school_grade?.find(e => e?.id === gradeId));
     const [gradeNum, setGradeNum] = useState(gradeId);
-    const {register, getValues, setValue, handleSubmit, watch, formState: { errors }} = useForm<KidProps>({
-        defaultValues: kid
+    const {register, getValues, setValue, handleSubmit, formState: { errors }} = useForm<KidPropsWrite>({
+        defaultValues: {
+            id: kid.id,
+            name: kid.name,
+            thumbnail: kid.thumbnail,
+            description: kid.description || "",
+            grade_id: kid.grade_id,
+        }
     })
 
-    const onSubmit: SubmitHandler<KidProps> = async (data) => {
-        console.log("*********************submit*********************");
-        console.log(data);
-
-        // const { error } = await supabase.from('kids').upsert(data);
-        // console.log(watch("name"));
-        // console.log(watch("description"));
-        // console.log(watch("grade_id"));
+    const onSubmit: SubmitHandler<KidPropsWrite> = async (data) => {
+        const { error } = await supabase.from('kids').upsert(data);
         
-        // if (error) {
-        //     console.error(error);
-        // }else{
-        //     mutate(() => supabase.from('kids').upsert(data))
-        //     setSnackbarState(true);
-        //     setEditMode(false)
-        // }
+        if (error) {
+            console.error(error);
+        }else{
+            mutate(() => supabase.from('kids').upsert(data))
+            setSnackbarState(true);
+            setEditMode(false)
+        }
     }
-
-    console.log(kid);
-    
-    console.log(watch("name"));
-    console.log(watch("description"));
 
     const handlePrevGrade = () => () => {
         setValue(`grade_id`, gradeNum - 1)
@@ -58,12 +55,6 @@ const SchoolGraderController = memo(({
         setTempGrade(school_grade?.find(e => e?.id === gradeNum + 1))
     }
 
-    const [snackbarState, setSnackbarState] = useState<boolean>(false);
-    const handleSnackbarClose = (_e: React.SyntheticEvent | Event, reason?: SnackbarCloseReason,) => {
-        if (reason === 'clickaway') return;
-        setSnackbarState(false);
-    };
-    
     return (
         <>
         <Box marginTop={2} marginBottom={2}>
@@ -140,7 +131,6 @@ const SchoolGraderController = memo(({
                             size="small"
                             type="submit"
                             sx={{flex: 1, height: "100%", maxWidth: "10em"}}
-                            onClick={() => setEditMode(!editMode)}
                         >
                             変更を保存する
                         </Button>
@@ -156,16 +146,9 @@ const SchoolGraderController = memo(({
                         編集
                     </Button>
                 }
-                
             </Stack>
             </form>
         </Box>
-        <Snackbar
-            open={snackbarState}
-            autoHideDuration={2000}
-            onClose={handleSnackbarClose}
-            message="更新しました"
-        />
         </>
     )
 })
@@ -181,8 +164,21 @@ const KidsManagementDialog = memo(({
     kidsManagementOpen: boolean,
     setKidsManagementOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
-    
+    const [snackbarState, setSnackbarState] = useState<boolean>(false);
+    const handleSnackbarClose = (_e: React.SyntheticEvent | Event, reason?: SnackbarCloseReason,) => {
+        if (reason === 'clickaway') return;
+        setSnackbarState(false);
+    };
+
     return (
+        <>
+        <Snackbar
+            open={snackbarState}
+            autoHideDuration={2000}
+            onClose={handleSnackbarClose}
+            message="更新しました"
+            sx={{display: "unset", position: "fixed", top: "8px", left: "auto !important", right: "8px !important", zIndex: 5000}}
+        />
         <Box padding={0}>
             <Dialog
                 open={kidsManagementOpen}
@@ -202,6 +198,7 @@ const KidsManagementDialog = memo(({
                             kid={kid}
                             gradeId={kid.grade_id}
                             school_grade={school_grade}
+                            setSnackbarState={setSnackbarState}
                             key={kid.id}
                         />
                         <Divider sx={{margin: "0.5em 0"}} />
@@ -216,6 +213,7 @@ const KidsManagementDialog = memo(({
                 </DialogActions>
             </Dialog>
       </Box>
+      </>
     )
 })
 

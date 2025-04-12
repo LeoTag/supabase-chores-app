@@ -1,8 +1,8 @@
 export type KidProps = {
     id: number,
     name: string,
-    thumbnail?: String | null,
-    description?: String | null,
+    thumbnail?: string | null,
+    description?: string | null,
     grade_id: number,
     school_grade: {
         id: number,
@@ -11,11 +11,7 @@ export type KidProps = {
     }
 }
 
-export type KidPropsWrite = {
-    id?: number,
-    thumbnail?: string | null | undefined,
-    school_grade?: KidProps["school_grade"]
-} & Omit<KidProps, "id" | "thumbnail" | "school_grade">
+export type KidPropsWrite = Omit<KidProps, "school_grade">
 
 export type ChoresHistoryProps = {
     selectedKid: KidProps;

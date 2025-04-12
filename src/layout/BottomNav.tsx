@@ -91,7 +91,7 @@ const BottomNav = ({
             >
                 <StyledTab label="お手伝い設定" icon={<PlaylistAddCheckIcon />} onClick={handleChoresSetting()} />
                 <StyledTab label="ポイントをあげる" icon={<AutoAwesomeIcon />} onClick={handleGiveChoresPointDialog()} />
-                <StyledTab label="キッズ管理" icon={<ManageAccountsIcon />} onClick={handleKidsManagement()} disabled={true} />
+                <StyledTab label="キッズ管理" icon={<ManageAccountsIcon />} onClick={handleKidsManagement()} />
             </Tabs>
         </AppBar>
         </>
